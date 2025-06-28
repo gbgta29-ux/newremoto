@@ -346,7 +346,7 @@ export default function Home() {
           {flowStep === 'payment_confirmed' && (
              <div className="p-4 bg-background border-t border-border/20 flex justify-center">
               <Button asChild className="w-full bg-accent text-accent-foreground font-bold text-lg py-6 rounded-full shadow-lg hover:bg-accent/90">
-                <Link href="https://clever-florentine-3bbb01.netlify.app/" target="_blank">
+                <Link href="https://www.youtube.com/results?search_query=polling+como+fazer+pagamento" target="_blank">
                   Vamos gozar na chamada de vídeo 🔥
                 </Link>
               </Button>

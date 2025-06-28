@@ -1,4 +1,3 @@
-
 'use server';
 
 import { generateResponse, GenerateResponseOutput } from '@/ai/flows/generate-response';
@@ -25,6 +24,7 @@ export async function createPixCharge(): Promise<PixChargeData | null> {
       method: 'POST',
       headers: {
         'Authorization': 'Bearer 35648|1odgFdRH6MLxbJAkam7zbBxGsktnksRjf8YJ9ffNf6e7baec',
+        'Accept': 'application/json',
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
@@ -58,6 +58,8 @@ export async function checkPaymentStatus(transactionId: string): Promise<{ statu
       method: 'GET',
       headers: {
         'Authorization': 'Bearer 35648|1odgFdRH6MLxbJAkam7zbBxGsktnksRjf8YJ9ffNf6e7baec',
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
       },
       cache: 'no-store',
     });
@@ -68,8 +70,8 @@ export async function checkPaymentStatus(transactionId: string): Promise<{ statu
       return null;
     }
     const data = await response.json();
-    // Assuming the status is nested under a 'data' object
-    return { status: data.data.status };
+    // Assuming the status is at the root of the response, not nested.
+    return { status: data.status };
   } catch (error) {
     console.error("Error checking payment status:", error);
     return null;
