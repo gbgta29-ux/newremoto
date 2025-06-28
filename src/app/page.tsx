@@ -23,7 +23,7 @@ type FlowStep =
   | 'awaiting_after_audio_11_response'
   | 'awaiting_after_audio_12_response'
   | 'awaiting_after_audio_14_response'
-  | 'awaiting_final_button_click'
+  | 'awaiting_pix_confirmation_response'
   | 'awaiting_pix_payment'
   | 'payment_confirmed'
   | 'chat_mode';
@@ -37,7 +37,6 @@ export default function Home() {
   const [flowStep, setFlowStep] = useState<FlowStep>('initial');
   const [userName, setUserName] = useState('');
   const [city, setCity] = useState('do Brasil');
-  const [showFinalButton, setShowFinalButton] = useState(false);
   const [isCreatingPix, setIsCreatingPix] = useState(false);
   const [isCheckingPayment, setIsCheckingPayment] = useState(false);
   const [pixData, setPixData] = useState<PixChargeData | null>(null);
@@ -58,7 +57,7 @@ export default function Home() {
     const fullMessage: Message = {
       id: Date.now() + Math.random(),
       timestamp: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
-      status: sender === 'user' ? 'sent' : 'read',
+      status: 'read',
       ...msg,
       sender,
     };
@@ -150,30 +149,6 @@ export default function Home() {
     setIsCheckingPayment(false);
   };
 
-  const handleFinalButtonClick = async () => {
-    setShowFinalButton(false);
-    setIsCreatingPix(true);
-    addMessage({ type: 'text', text: "CLARO 💗" }, 'user');
-
-    await showLoadingIndicator(1000, "Gravando áudio...");
-    await playAudioSequence(18, 'https://imperiumfragrance.shop/wp-content/uploads/2025/06/18.mp3');
-    
-    addMessage({ type: 'text', text: "Perfeito! Já vou gerar o PIX pra você... 😉" }, 'bot');
-    await showLoadingIndicator(3000);
-    
-    const charge = await createPixCharge();
-    if (charge && charge.pixCopyPaste) {
-      setPixData(charge);
-      setFlowStep('awaiting_pix_payment');
-      addMessage({ type: 'text', text: "Prontinho amor, o valor é só R$10,00. Faz o pagamento pra gente continuar..." }, 'bot');
-      addMessage({ type: 'pix', sender: 'bot', pixCopyPaste: charge.pixCopyPaste });
-    } else {
-      addMessage({ type: 'text', text: "Ops, não consegui gerar o PIX agora, amor. Tenta de novo em um minutinho." }, 'bot');
-      setShowFinalButton(true);
-    }
-    setIsCreatingPix(false);
-  };
-
   const formAction = async (formData: FormData) => {
     const userMessageText = formData.get("message") as string;
     if (!userMessageText.trim()) return;
@@ -188,6 +163,7 @@ export default function Home() {
         await showLoadingIndicator(3000);
         addMessage({ type: 'text', text: `Adorei seu nome ${userMessageText}, 💗 posso te chamar de amor?` }, 'bot');
         setFlowStep('awaiting_amor_permission');
+        setShowInput(true);
         break;
 
       case 'awaiting_amor_permission':
@@ -198,6 +174,7 @@ export default function Home() {
         await showLoadingIndicator(3000);
         addMessage({ type: 'text', text: "Acho que vai gostar rsrs , posso mandar ?" }, 'bot');
         setFlowStep('awaiting_after_gostar_response');
+        setShowInput(true);
         break;
         
       case 'awaiting_after_gostar_response':
@@ -207,6 +184,7 @@ export default function Home() {
         await showLoadingIndicator(3000);
         addMessage({ type: 'text', text: "O que você achou bb??" }, 'bot');
         setFlowStep('awaiting_after_picante_response');
+        setShowInput(true);
         break;
 
       case 'awaiting_after_picante_response':
@@ -216,6 +194,7 @@ export default function Home() {
         await playAudioSequence(9, 'https://imperiumfragrance.shop/wp-content/uploads/2025/06/9.mp3');
         await playAudioSequence(10, 'https://imperiumfragrance.shop/wp-content/uploads/2025/06/10.mp3');
         setFlowStep('awaiting_after_audio_10_response');
+        setShowInput(true);
         break;
 
       case 'awaiting_after_audio_10_response':
@@ -223,6 +202,7 @@ export default function Home() {
         await showLoadingIndicator(3000, "Gravando áudio...");
         await playAudioSequence(11, 'https://imperiumfragrance.shop/wp-content/uploads/2025/06/11.mp3');
         setFlowStep('awaiting_after_audio_11_response');
+        setShowInput(true);
         break;
 
       case 'awaiting_after_audio_11_response':
@@ -230,6 +210,7 @@ export default function Home() {
         await showLoadingIndicator(3000, "Gravando áudio...");
         await playAudioSequence(12, 'https://imperiumfragrance.shop/wp-content/uploads/2025/06/12.mp3');
         setFlowStep('awaiting_after_audio_12_response');
+        setShowInput(true);
         break;
 
       case 'awaiting_after_audio_12_response':
@@ -240,6 +221,7 @@ export default function Home() {
         await playAudioSequence(13, 'https://imperiumfragrance.shop/wp-content/uploads/2025/06/13.mp3');
         await playAudioSequence(14, 'https://imperiumfragrance.shop/wp-content/uploads/2025/06/14.mp3');
         setFlowStep('awaiting_after_audio_14_response');
+        setShowInput(true);
         break;
 
       case 'awaiting_after_audio_14_response':
@@ -253,8 +235,30 @@ export default function Home() {
         await showLoadingIndicator(3000, "Gravando áudio...");
         await playAudioSequence(16, 'https://imperiumfragrance.shop/wp-content/uploads/2025/06/16.mp3');
         await playAudioSequence(17, 'https://imperiumfragrance.shop/wp-content/uploads/2025/06/17.mp3');
-        setFlowStep('awaiting_final_button_click');
-        setShowFinalButton(true);
+        setFlowStep('awaiting_pix_confirmation_response');
+        setShowInput(true);
+        break;
+
+      case 'awaiting_pix_confirmation_response':
+        setIsCreatingPix(true);
+        
+        await showLoadingIndicator(1000, "Gravando áudio...");
+        await playAudioSequence(18, 'https://imperiumfragrance.shop/wp-content/uploads/2025/06/18.mp3');
+        
+        addMessage({ type: 'text', text: "Perfeito! Já vou gerar o PIX pra você... 😉" }, 'bot');
+        await showLoadingIndicator(3000);
+        
+        const charge = await createPixCharge();
+        if (charge && charge.pixCopyPaste) {
+          setPixData(charge);
+          setFlowStep('awaiting_pix_payment');
+          addMessage({ type: 'text', text: "Prontinho amor, o valor é só R$10,00. Faz o pagamento pra gente continuar..." }, 'bot');
+          addMessage({ type: 'pix', sender: 'bot', pixCopyPaste: charge.pixCopyPaste });
+        } else {
+          addMessage({ type: 'text', text: "Ops, não consegui gerar o PIX agora, amor. Tenta de novo em um minutinho." }, 'bot');
+          setShowInput(true); 
+        }
+        setIsCreatingPix(false);
         break;
 
       case 'chat_mode':
@@ -266,11 +270,8 @@ export default function Home() {
           console.error(error);
           addMessage({ type: 'text', text: "Desculpe, ocorreu um erro ao processar sua mensagem." }, 'bot');
         }
+        setShowInput(true);
         break;
-    }
-    
-    if (flowStep !== 'awaiting_final_button_click' && flowStep !== 'awaiting_pix_payment') {
-      setShowInput(true);
     }
   };
 
@@ -322,25 +323,9 @@ export default function Home() {
             </div>
           )}
 
-          {showFinalButton && (
-            <div className="p-4 bg-background border-t border-border/20 flex justify-center">
-              <Button
-                onClick={handleFinalButtonClick}
-                disabled={isCreatingPix}
-                className="w-full bg-primary text-primary-foreground font-bold text-lg py-6 rounded-full shadow-lg hover:bg-primary/90"
-              >
-                {isCreatingPix && <RefreshCw className="mr-2 h-4 w-4 animate-spin" />}
-                CLARO 💗
-              </Button>
-            </div>
-          )}
-          {showInput && <ChatInput formAction={formAction} disabled={isLoading} />}
+          {showInput && <ChatInput formAction={formAction} disabled={isLoading || isCreatingPix} />}
           <audio ref={notificationSoundRef} src="https://imperiumfragrance.shop/wp-content/uploads/2025/06/adew.mp3" preload="auto" />
       </div>
     </div>
   );
 }
-
-    
-
-    
