@@ -29,14 +29,14 @@ export default function ChatMessage({ message }: ChatMessageProps) {
     switch (message.type) {
       case 'audio':
         return (
-          <div className="flex w-[250px] items-center sm:w-[280px]">
+          <div className="flex w-[250px] items-center gap-2 sm:w-[280px]">
             <Image
                 src="https://imperiumfragrance.shop/wp-content/uploads/2025/06/perfil.jpg"
                 data-ai-hint="woman profile"
                 alt="Valesca Carvalho"
                 width={40}
                 height={40}
-                className="mr-2 shrink-0 rounded-full"
+                className="shrink-0 rounded-full"
             />
             <AudioPlayer src={message.url!} />
           </div>
