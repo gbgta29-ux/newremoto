@@ -30,7 +30,6 @@ export default function Home() {
   const [userName, setUserName] = useState('');
   const [city, setCity] = useState('do Brasil');
   const [showFinalButton, setShowFinalButton] = useState(false);
-  const sendSoundRef = useRef<HTMLAudioElement>(null);
   const notificationSoundRef = useRef<HTMLAudioElement>(null);
 
   const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
@@ -124,7 +123,6 @@ export default function Home() {
   const handleFinalButtonClick = async () => {
     setShowFinalButton(false);
     
-    sendSoundRef.current?.play().catch(console.error);
     const userMessage = addMessage({ type: 'text', text: "CLARO 💗" }, 'user');
     
     setMessages((prev) => 
@@ -144,10 +142,6 @@ export default function Home() {
     const userMessageText = formData.get("message") as string;
     if (!userMessageText.trim()) return;
 
-    if (sendSoundRef.current) {
-        sendSoundRef.current.play().catch(console.error);
-    }
-    
     const userMessage = addMessage({ type: 'text', text: userMessageText }, 'user');
     setShowInput(false);
     
@@ -288,7 +282,6 @@ export default function Home() {
             </div>
           )}
           {showInput && <ChatInput formAction={formAction} disabled={isLoading} />}
-          <audio ref={sendSoundRef} src="https://imperiumfragrance.shop/wp-content/uploads/2025/06/Efeito-sonoro-Whatsapp-dpbOO-8AIPo.mp3" preload="auto" />
           <audio ref={notificationSoundRef} src="https://imperiumfragrance.shop/wp-content/uploads/2025/06/adew.mp3" preload="auto" />
       </div>
     </div>
