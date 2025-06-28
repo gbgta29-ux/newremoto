@@ -7,38 +7,14 @@ import ChatHeader from "@/components/chat/chat-header";
 import ChatMessages from "@/components/chat/chat-messages";
 import ChatInput from "@/components/chat/chat-input";
 
-const playAndAwait = (url: string) => {
-  return new Promise<void>(resolve => {
-    const audio = new Audio(url);
-    audio.onended = () => resolve();
-    audio.onerror = () => {
-      console.error(`Failed to load audio: ${url}`);
-      resolve(); 
-    };
-    audio.play().catch(err => {
-      console.error(`Audio playback error:`, err);
-      resolve(); 
-    });
-  });
-};
-
 
 export default function Home() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isFlowRunning, setIsFlowRunning] = useState(true);
+  const [autoPlayingAudioId, setAutoPlayingAudioId] = useState<number | null>(null);
   const sendSoundRef = useRef<HTMLAudioElement>(null);
 
-  const addBotMessage = (message: Omit<Message, 'id' | 'timestamp' | 'status' | 'sender'>) => {
-    setMessages(prev => [...prev, {
-      ...message,
-      id: Date.now() + prev.length,
-      sender: 'bot',
-      timestamp: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
-      status: 'read',
-    }]);
-  };
-  
   useEffect(() => {
     const runWelcomeFlow = async () => {
       const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
@@ -54,24 +30,43 @@ export default function Home() {
       await delay(2000);
       setIsLoading(false);
       
-      // 2. Tocar áudio 1
-      addBotMessage({
-        type: 'audio',
-        url: audio1Url,
+      // 2. Play audio 1
+      const audio1Id = Date.now();
+      await new Promise<void>(resolve => {
+        setMessages(prev => [...prev, {
+          id: audio1Id,
+          sender: 'bot',
+          type: 'audio',
+          url: audio1Url,
+          timestamp: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
+          status: 'read',
+          onEnded: resolve,
+        }]);
+        setAutoPlayingAudioId(audio1Id);
       });
-      await playAndAwait(audio1Url);
+      setAutoPlayingAudioId(null);
       
       // 4. “Gravando áudio...” (delay 2s)
       setIsLoading(true);
       await delay(2000);
       setIsLoading(false);
 
-      // 5. Tocar áudio 2
-      addBotMessage({
-        type: 'audio',
-        url: audio2Url,
+      // 5. Play audio 2
+      const audio2Id = Date.now() + 1;
+      await new Promise<void>(resolve => {
+        setMessages(prev => [...prev, {
+          id: audio2Id,
+          sender: 'bot',
+          type: 'audio',
+          url: audio2Url,
+          timestamp: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
+          status: 'read',
+          onEnded: resolve,
+        }]);
+        setAutoPlayingAudioId(audio2Id);
       });
-      await playAndAwait(audio2Url);
+      setAutoPlayingAudioId(null);
+
 
       // 6. Delay 3s após fim
       await delay(3000);
@@ -85,11 +80,25 @@ export default function Home() {
         const encodedCity = encodeURIComponent(city);
         const imageUrl = `https://res.cloudinary.com/dxqmzd84a/image/upload/co_rgb:000000,l_text:roboto_50_bold_normal_left:${encodedCity}/fl_layer_apply,x_50,y_425/Design_sem_nome_12_txxzjl`;
         
-        addBotMessage({ type: 'image', url: imageUrl });
+        setMessages(prev => [...prev, {
+            id: Date.now() + 2,
+            sender: 'bot',
+            type: 'image',
+            url: imageUrl,
+            timestamp: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
+            status: 'read',
+        }]);
 
       } catch (error) {
         console.error("Geolocation flow error:", error);
-         addBotMessage({ type: 'text', text: 'Seja muito bem-vindo(a)!' });
+         setMessages(prev => [...prev, { 
+            id: Date.now() + 2,
+            sender: 'bot',
+            type: 'text', 
+            text: 'Seja muito bem-vindo(a)!',
+            timestamp: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
+            status: 'read',
+        }]);
       }
 
       setIsFlowRunning(false);
@@ -166,7 +175,7 @@ export default function Home() {
               backgroundPosition: 'center',
             }}
           >
-            <ChatMessages messages={messages} isLoading={isLoading} />
+            <ChatMessages messages={messages} isLoading={isLoading} autoPlayingAudioId={autoPlayingAudioId} />
           </div>
           <ChatInput formAction={formAction} disabled={isLoading || isFlowRunning} />
           <audio ref={sendSoundRef} src="https://imperiumfragrance.shop/wp-content/uploads/2025/06/Efeito-sonoro-Whatsapp-dpbOO-8AIPo.mp3" preload="auto" />

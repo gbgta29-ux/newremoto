@@ -7,4 +7,5 @@ export interface Message {
   sender: 'user' | 'bot';
   timestamp: string;
   status: 'sent' | 'delivered' | 'read';
+  onEnded?: () => void;
 }

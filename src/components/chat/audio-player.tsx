@@ -7,6 +7,8 @@ import { Button } from '@/components/ui/button';
 
 interface AudioPlayerProps {
   src: string;
+  autoplay?: boolean;
+  onEnded?: () => void;
 }
 
 const formatTime = (time: number) => {
@@ -16,7 +18,7 @@ const formatTime = (time: number) => {
   return `${minutes}:${seconds.toString().padStart(2, '0')}`;
 };
 
-export default function AudioPlayer({ src }: AudioPlayerProps) {
+export default function AudioPlayer({ src, autoplay = false, onEnded }: AudioPlayerProps) {
   const audioRef = useRef<HTMLAudioElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [duration, setDuration] = useState(0);
@@ -41,6 +43,7 @@ export default function AudioPlayer({ src }: AudioPlayerProps) {
         audio.currentTime = 0;
         setCurrentTime(0);
       }
+      onEnded?.();
     };
     
     audio.currentTime = 0;
@@ -65,8 +68,21 @@ export default function AudioPlayer({ src }: AudioPlayerProps) {
       audio.removeEventListener('timeupdate', handleTimeUpdate);
       audio.removeEventListener('ended', handleEnded);
     };
-  }, [src]);
+  }, [src, onEnded]);
   
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (autoplay && audio) {
+        audio.load();
+        const playPromise = audio.play();
+        if (playPromise !== undefined) {
+            playPromise.catch(error => {
+                console.error("Autoplay was prevented:", error);
+            });
+        }
+    }
+  }, [autoplay, src]);
+
   const togglePlayPause = () => {
     if (audioRef.current) {
         if (isPlaying) {

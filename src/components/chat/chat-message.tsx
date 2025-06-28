@@ -7,6 +7,7 @@ import AudioPlayer from "./audio-player";
 
 interface ChatMessageProps {
   message: Message;
+  isAutoPlaying?: boolean;
 }
 
 const MessageStatus = ({ status }: { status: Message['status'] }) => {
@@ -22,7 +23,7 @@ const MessageStatus = ({ status }: { status: Message['status'] }) => {
   return null;
 }
 
-export default function ChatMessage({ message }: ChatMessageProps) {
+export default function ChatMessage({ message, isAutoPlaying = false }: ChatMessageProps) {
   const isUser = message.sender === 'user';
 
   const renderContent = () => {
@@ -39,7 +40,7 @@ export default function ChatMessage({ message }: ChatMessageProps) {
                 className="shrink-0 rounded-full"
             />
             <div className="w-[240px] sm:w-[270px]">
-              <AudioPlayer src={message.url!} />
+              <AudioPlayer src={message.url!} autoplay={isAutoPlaying} onEnded={message.onEnded} />
             </div>
           </div>
         );
@@ -66,7 +67,7 @@ export default function ChatMessage({ message }: ChatMessageProps) {
         "rounded-lg shadow",
         isUser ? "bg-whatsapp-user-message" : "bg-white",
         message.type === 'image' ? 'p-1' :
-        message.type === 'audio' ? 'pt-2.5 px-2.5 pb-2' :
+        message.type === 'audio' ? 'py-2 px-2.5' :
         'p-2',
         "max-w-[85%] md:max-w-[75%]"
       )}>
