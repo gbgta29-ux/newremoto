@@ -137,12 +137,14 @@ export default function Home() {
     switch (flowStep) {
       case 'awaiting_name':
         setUserName(userMessageText);
+        await delay(1500);
         addMessage({ type: 'text', text: `Adorei seu nome ${userMessageText}, 💗 posso te chamar de amor?` }, 'bot');
         setFlowStep('awaiting_amor_permission');
         setShowInput(true);
         break;
 
       case 'awaiting_amor_permission':
+        await delay(1500);
         await playAudioSequence(4, 'https://imperiumfragrance.shop/wp-content/uploads/2025/06/4.mp3');
         await delay(2000);
         await playAudioSequence(5, 'https://imperiumfragrance.shop/wp-content/uploads/2025/06/5.mp3');
@@ -153,6 +155,7 @@ export default function Home() {
         break;
         
       case 'awaiting_after_gostar_response':
+        await delay(1500);
         addMessage({ type: 'image', url: 'https://imperiumfragrance.shop/wp-content/uploads/2025/06/essa-.jpg' }, 'bot');
         await delay(2000);
         addMessage({ type: 'text', text: "O que você achou bb?? vou mostrar umas mais picantes" }, 'bot');
@@ -161,6 +164,7 @@ export default function Home() {
         break;
 
       case 'awaiting_after_picante_response':
+        await delay(1500);
         await playAudioSequence(8, 'https://imperiumfragrance.shop/wp-content/uploads/2025/06/8.mp3');
         await delay(2000);
         await playAudioSequence(9, 'https://imperiumfragrance.shop/wp-content/uploads/2025/06/9.mp3');
@@ -171,18 +175,21 @@ export default function Home() {
         break;
 
       case 'awaiting_after_audio_10_response':
+        await delay(1500);
         await playAudioSequence(11, 'https://imperiumfragrance.shop/wp-content/uploads/2025/06/11.mp3');
         setFlowStep('awaiting_after_audio_11_response');
         setShowInput(true);
         break;
 
       case 'awaiting_after_audio_11_response':
+        await delay(1500);
         await playAudioSequence(12, 'https://imperiumfragrance.shop/wp-content/uploads/2025/06/12.mp3');
         setFlowStep('awaiting_after_audio_12_response');
         setShowInput(true);
         break;
 
       case 'awaiting_after_audio_12_response':
+        await delay(1500);
         addMessage({ type: 'image', url: 'https://imperiumfragrance.shop/wp-content/uploads/2025/06/salva-e.jpg' }, 'bot');
         await delay(2000);
         await playAudioSequence(13, 'https://imperiumfragrance.shop/wp-content/uploads/2025/06/13.mp3');
@@ -193,6 +200,7 @@ export default function Home() {
         break;
 
       case 'awaiting_after_audio_14_response':
+        await delay(1500);
         await playAudioSequence(15, 'https://imperiumfragrance.shop/wp-content/uploads/2025/06/15.mp3');
         await delay(1000);
         addMessage({ type: 'image', url: 'https://imperiumfragrance.shop/wp-content/uploads/2025/06/IMAGEM.jpg' }, 'bot');
@@ -208,6 +216,7 @@ export default function Home() {
 
       case 'chat_mode':
         try {
+          await delay(1500);
           const { response } = await sendMessage(userMessageText);
           addMessage({ type: 'text', text: response }, 'bot');
         } catch (error) {
