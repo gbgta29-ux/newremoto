@@ -143,13 +143,12 @@ export default function Home() {
     if (!userMessageText.trim()) return;
 
     const userMessage = addMessage({ type: 'text', text: userMessageText }, 'user');
-    setShowInput(false);
     
     setMessages((prev) => 
       prev.map(msg => msg.id === userMessage.id ? {...msg, status: 'read'} : msg)
     );
 
-    await showTypingIndicator(1500);
+    setIsLoading(true);
 
     switch (flowStep) {
       case 'awaiting_name':
@@ -158,7 +157,6 @@ export default function Home() {
         await delay(500);
         addMessage({ type: 'text', text: `Adorei seu nome ${userMessageText}, 💗 posso te chamar de amor?` }, 'bot');
         setFlowStep('awaiting_amor_permission');
-        setShowInput(true);
         break;
 
       case 'awaiting_amor_permission':
@@ -170,7 +168,6 @@ export default function Home() {
         await delay(500);
         addMessage({ type: 'text', text: "Acho que vai gostar rsrs" }, 'bot');
         setFlowStep('awaiting_after_gostar_response');
-        setShowInput(true);
         break;
         
       case 'awaiting_after_gostar_response':
@@ -182,7 +179,6 @@ export default function Home() {
         await delay(500);
         addMessage({ type: 'text', text: "O que você achou bb?? vou mostrar umas mais picantes" }, 'bot');
         setFlowStep('awaiting_after_picante_response');
-        setShowInput(true);
         break;
 
       case 'awaiting_after_picante_response':
@@ -192,19 +188,16 @@ export default function Home() {
         await delay(2000);
         await playAudioSequence(10, 'https://imperiumfragrance.shop/wp-content/uploads/2025/06/10.mp3');
         setFlowStep('awaiting_after_audio_10_response');
-        setShowInput(true);
         break;
 
       case 'awaiting_after_audio_10_response':
         await playAudioSequence(11, 'https://imperiumfragrance.shop/wp-content/uploads/2025/06/11.mp3');
         setFlowStep('awaiting_after_audio_11_response');
-        setShowInput(true);
         break;
 
       case 'awaiting_after_audio_11_response':
         await playAudioSequence(12, 'https://imperiumfragrance.shop/wp-content/uploads/2025/06/12.mp3');
         setFlowStep('awaiting_after_audio_12_response');
-        setShowInput(true);
         break;
 
       case 'awaiting_after_audio_12_response':
@@ -216,7 +209,6 @@ export default function Home() {
         await delay(2000);
         await playAudioSequence(14, 'https://imperiumfragrance.shop/wp-content/uploads/2025/06/14.mp3');
         setFlowStep('awaiting_after_audio_14_response');
-        setShowInput(true);
         break;
 
       case 'awaiting_after_audio_14_response':
@@ -235,6 +227,7 @@ export default function Home() {
         await playAudioSequence(17, 'https://imperiumfragrance.shop/wp-content/uploads/2025/06/17.mp3');
         setFlowStep('awaiting_final_button_click');
         setShowFinalButton(true);
+        setShowInput(false);
         break;
 
       case 'chat_mode':
@@ -250,7 +243,6 @@ export default function Home() {
           await delay(500);
           addMessage({ type: 'text', text: "Desculpe, ocorreu um erro ao processar sua mensagem." }, 'bot');
         }
-        setShowInput(true);
         break;
     }
     setIsLoading(false);

@@ -17,7 +17,7 @@ export default function ChatInput({ formAction, disabled }: ChatInputProps) {
   
   const handleFormSubmit = async (formData: FormData) => {
     if (message.trim()) {
-      await formAction(formData);
+      formAction(formData);
       setMessage('');
     }
   }
