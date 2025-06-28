@@ -1,7 +1,7 @@
 
 'use client'
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Mic, ArrowUp, Smile, Paperclip } from 'lucide-react';
@@ -14,20 +14,11 @@ interface ChatInputProps {
 export default function ChatInput({ formAction, disabled }: ChatInputProps) {
   const [message, setMessage] = useState('');
   const formRef = useRef<HTMLFormElement>(null);
-
-  useEffect(() => {
-    if (!disabled) {
-      // Don't clear message when AI is thinking, only when flow is running
-      if (message && !disabled) {
-         setMessage('');
-      }
-      formRef.current?.reset();
-    }
-  }, [disabled, message]);
   
   const handleFormSubmit = async (formData: FormData) => {
     if (message.trim()) {
       await formAction(formData);
+      setMessage('');
     }
   }
 

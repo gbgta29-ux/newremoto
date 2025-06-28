@@ -61,7 +61,6 @@ export default function Home() {
       
       // Audio 2
       setIsLoading(true);
-      await delay(2000);
       setIsLoading(false);
       addBotMessage({
         type: 'audio',
@@ -107,7 +106,12 @@ export default function Home() {
     };
 
     setMessages((prev) => [...prev, userMessage]);
-    sendSoundRef.current?.play().catch(console.error);
+    
+    if (sendSoundRef.current) {
+        sendSoundRef.current.currentTime = 0;
+        sendSoundRef.current.play().catch(console.error);
+    }
+    
     setIsLoading(true);
 
     try {
