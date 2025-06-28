@@ -1,7 +1,6 @@
-
 "use client";
 
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Play, Pause } from 'lucide-react';
 import { Slider } from '@/components/ui/slider';
 import { Button } from '@/components/ui/button';
@@ -24,51 +23,49 @@ export default function AudioPlayer({ src }: AudioPlayerProps) {
   const [currentTime, setCurrentTime] = useState(0);
   const [playbackRate, setPlaybackRate] = useState(1);
 
-  const onLoadedMetadata = useCallback(() => {
-    if (audioRef.current) {
-      setDuration(audioRef.current.duration);
-    }
-  }, []);
-
-  const onTimeUpdate = useCallback(() => {
-    if (audioRef.current) {
-      setCurrentTime(audioRef.current.currentTime);
-    }
-  }, []);
-
-  const onEnded = useCallback(() => {
-    setIsPlaying(false);
-    if (audioRef.current) {
-      audioRef.current.currentTime = 0;
-    }
-  }, []);
-
   useEffect(() => {
     const audio = audioRef.current;
-    if (audio) {
-      setIsPlaying(!audio.paused);
-      if (audio.readyState >= 1) { // HAVE_METADATA
-        onLoadedMetadata();
+    if (!audio) return;
+
+    const handlePlay = () => setIsPlaying(true);
+    const handlePause = () => setIsPlaying(false);
+    const handleLoadedMetadata = () => {
+      if (audio) setDuration(audio.duration);
+    };
+    const handleTimeUpdate = () => {
+      if (audio) setCurrentTime(audio.currentTime);
+    };
+    const handleEnded = () => {
+      setIsPlaying(false);
+      if (audio) {
+        audio.currentTime = 0;
+        setCurrentTime(0);
       }
+    };
+    
+    audio.currentTime = 0;
+    setCurrentTime(0);
+    setDuration(audio.duration || 0);
+    setIsPlaying(!audio.paused);
 
-      const handlePlay = () => setIsPlaying(true);
-      const handlePause = () => setIsPlaying(false);
-
-      audio.addEventListener('loadedmetadata', onLoadedMetadata);
-      audio.addEventListener('timeupdate', onTimeUpdate);
-      audio.addEventListener('ended', onEnded);
-      audio.addEventListener('play', handlePlay);
-      audio.addEventListener('pause', handlePause);
-
-      return () => {
-        audio.removeEventListener('loadedmetadata', onLoadedMetadata);
-        audio.removeEventListener('timeupdate', onTimeUpdate);
-        audio.removeEventListener('ended', onEnded);
-        audio.removeEventListener('play', handlePlay);
-        audio.removeEventListener('pause', handlePause);
-      };
+    audio.addEventListener('play', handlePlay);
+    audio.addEventListener('pause', handlePause);
+    audio.addEventListener('loadedmetadata', handleLoadedMetadata);
+    audio.addEventListener('timeupdate', handleTimeUpdate);
+    audio.addEventListener('ended', handleEnded);
+    
+    if (audio.readyState > 0) {
+      handleLoadedMetadata();
     }
-  }, [onLoadedMetadata, onTimeUpdate, onEnded]);
+
+    return () => {
+      audio.removeEventListener('play', handlePlay);
+      audio.removeEventListener('pause', handlePause);
+      audio.removeEventListener('loadedmetadata', handleLoadedMetadata);
+      audio.removeEventListener('timeupdate', handleTimeUpdate);
+      audio.removeEventListener('ended', handleEnded);
+    };
+  }, [src]);
   
   const togglePlayPause = () => {
     if (audioRef.current) {
@@ -81,7 +78,7 @@ export default function AudioPlayer({ src }: AudioPlayerProps) {
   };
 
   const handleProgressChange = (value: number[]) => {
-    if (audioRef.current && isFinite(duration)) {
+    if (audioRef.current && isFinite(duration) && duration > 0) {
       const newTime = (value[0] / 100) * duration;
       audioRef.current.currentTime = newTime;
       setCurrentTime(newTime);
@@ -108,7 +105,7 @@ export default function AudioPlayer({ src }: AudioPlayerProps) {
         {isPlaying ? <Pause className="h-5 w-5 fill-gray-600 text-gray-600" /> : <Play className="h-5 w-5 fill-gray-600 text-gray-600" />}
       </Button>
 
-      <div className="flex-1 space-y-1.5">
+      <div className="flex-1 space-y-1">
           <Slider
               value={[progress]}
               onValueChange={handleProgressChange}
