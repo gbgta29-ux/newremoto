@@ -66,12 +66,12 @@ export default function ChatMessage({ message }: ChatMessageProps) {
         "rounded-lg shadow",
         isUser ? "bg-whatsapp-user-message" : "bg-white",
         message.type === 'image' ? 'p-1' :
-        message.type === 'audio' ? 'py-2.5 px-3' :
+        message.type === 'audio' ? 'pt-2.5 px-2.5 pb-2' :
         'p-2',
         "max-w-[85%] md:max-w-[75%]"
       )}>
         {renderContent()}
-        <div className="flex justify-end items-center mt-1 px-2 pb-1">
+        <div className="flex justify-end items-center mt-1 px-2">
           <span className="text-xs text-muted-foreground mr-1">{message.timestamp}</span>
           {isUser && <MessageStatus status={message.status} />}
         </div>
