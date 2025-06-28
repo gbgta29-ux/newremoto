@@ -7,101 +7,90 @@ import ChatHeader from "@/components/chat/chat-header";
 import ChatMessages from "@/components/chat/chat-messages";
 import ChatInput from "@/components/chat/chat-input";
 
+type FlowStep = 
+  | 'initial'
+  | 'awaiting_name'
+  | 'awaiting_amor_permission'
+  | 'awaiting_after_gostar_response'
+  | 'awaiting_after_picante_response'
+  | 'chat_mode';
 
 export default function Home() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [isFlowRunning, setIsFlowRunning] = useState(true);
   const [autoPlayingAudioId, setAutoPlayingAudioId] = useState<number | null>(null);
+  const [showInput, setShowInput] = useState(false);
+  const [flowStep, setFlowStep] = useState<FlowStep>('initial');
+  const [userName, setUserName] = useState('');
+  const [city, setCity] = useState('do Brasil');
   const sendSoundRef = useRef<HTMLAudioElement>(null);
+
+  const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
+
+  const addMessage = (msg: Omit<Message, 'id' | 'timestamp' | 'status'>, sender: 'user' | 'bot'): Message => {
+    const fullMessage: Message = {
+      id: Date.now() + Math.random(),
+      timestamp: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
+      status: sender === 'user' ? 'sent' : 'read',
+      ...msg,
+      sender,
+    };
+    setMessages(prev => [...prev, fullMessage]);
+    return fullMessage;
+  };
+  
+  const playAudioSequence = async (audioId: number, url: string) => {
+    await new Promise<void>(resolve => {
+        const audioMessage = addMessage({ type: 'audio', url, onEnded: resolve }, 'bot');
+        setAutoPlayingAudioId(audioMessage.id);
+    });
+    setAutoPlayingAudioId(null);
+  };
+  
+  const showTypingIndicator = async (duration: number) => {
+      setIsLoading(true);
+      await delay(duration);
+      setIsLoading(false);
+  };
 
   useEffect(() => {
     const runWelcomeFlow = async () => {
-      const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
-      
-      setIsFlowRunning(true);
-      setMessages([]);
-
-      const audio1Url = 'https://imperiumfragrance.shop/wp-content/uploads/2025/06/1-1.mp3';
-      const audio2Url = 'https://imperiumfragrance.shop/wp-content/uploads/2025/06/2-1.mp3';
-
-      // 1. “Gravando áudio...” (delay 2s)
-      setIsLoading(true);
-      await delay(2000);
-      setIsLoading(false);
-      
-      // 2. Play audio 1
-      const audio1Id = Date.now();
-      await new Promise<void>(resolve => {
-        setMessages(prev => [...prev, {
-          id: audio1Id,
-          sender: 'bot',
-          type: 'audio',
-          url: audio1Url,
-          timestamp: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
-          status: 'read',
-          onEnded: resolve,
-        }]);
-        setAutoPlayingAudioId(audio1Id);
-      });
-      setAutoPlayingAudioId(null);
-      
-      // 4. “Gravando áudio...” (delay 2s)
-      setIsLoading(true);
-      await delay(2000);
-      setIsLoading(false);
-
-      // 5. Play audio 2
-      const audio2Id = Date.now() + 1;
-      await new Promise<void>(resolve => {
-        setMessages(prev => [...prev, {
-          id: audio2Id,
-          sender: 'bot',
-          type: 'audio',
-          url: audio2Url,
-          timestamp: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
-          status: 'read',
-          onEnded: resolve,
-        }]);
-        setAutoPlayingAudioId(audio2Id);
-      });
-      setAutoPlayingAudioId(null);
-
-
-      // 6. Delay 3s após fim
-      await delay(3000);
-
-      // 7. & 8. Geolocation Image
+      let currentCity = 'do Brasil';
       try {
         const geoResponse = await fetch('https://get.geojs.io/v1/ip/geo.json');
-        if (!geoResponse.ok) throw new Error('Failed to fetch geo data');
-        const geoData = await geoResponse.json();
-        const city = geoData.city || 'do Brasil';
-        const encodedCity = encodeURIComponent(city);
-        const imageUrl = `https://res.cloudinary.com/dxqmzd84a/image/upload/co_rgb:000000,l_text:roboto_50_bold_normal_left:${encodedCity}/fl_layer_apply,x_50,y_425/Design_sem_nome_12_txxzjl`;
-        
-        setMessages(prev => [...prev, {
-            id: Date.now() + 2,
-            sender: 'bot',
-            type: 'image',
-            url: imageUrl,
-            timestamp: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
-            status: 'read',
-        }]);
-
+        if (geoResponse.ok) {
+          const geoData = await geoResponse.json();
+          currentCity = geoData.city || 'do Brasil';
+          setCity(currentCity);
+        }
       } catch (error) {
-        console.error("Geolocation flow error:", error);
-         setMessages(prev => [...prev, { 
-            id: Date.now() + 2,
-            sender: 'bot',
-            type: 'text', 
-            text: 'Seja muito bem-vindo(a)!',
-            timestamp: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
-            status: 'read',
-        }]);
+        console.error("Geolocation fetch error:", error);
       }
+      
+      await showTypingIndicator(2000);
+      await playAudioSequence(1, 'https://imperiumfragrance.shop/wp-content/uploads/2025/06/1-1.mp3');
+      await showTypingIndicator(2000);
+      await playAudioSequence(2, 'https://imperiumfragrance.shop/wp-content/uploads/2025/06/2-1.mp3');
+      await delay(3000);
+      
+      const encodedCity = encodeURIComponent(currentCity);
+      const imageUrl = `https://res.cloudinary.com/dxqmzd84a/image/upload/co_rgb:000000,l_text:roboto_50_bold_normal_left:${encodedCity}/fl_layer_apply,x_50,y_425/Design_sem_nome_12_txxzjl`;
+      addMessage({ type: 'image', url: imageUrl }, 'bot');
+      
+      await delay(2000);
+      addMessage({ type: 'text', text: "Fotinha de agora meu bem 😍" }, 'bot');
+      
+      await showTypingIndicator(2000);
+      await playAudioSequence(3, 'https://imperiumfragrance.shop/wp-content/uploads/2025/06/3-1.mp3');
 
-      setIsFlowRunning(false);
+      await delay(2000);
+      addMessage({ type: 'text', text: `E moro em ${currentCity}` }, 'bot');
+      
+      await delay(2000);
+      addMessage({ type: 'text', text: "Qual seu nome, bb? 💗" }, 'bot');
+      
+      setShowInput(true);
+      setFlowStep('awaiting_name');
     };
 
     runWelcomeFlow();
@@ -112,55 +101,59 @@ export default function Home() {
     const userMessageText = formData.get("message") as string;
     if (!userMessageText.trim()) return;
 
-    // Play sound before state updates to prevent re-render issues
     if (sendSoundRef.current) {
         sendSoundRef.current.currentTime = 0;
         sendSoundRef.current.play().catch(console.error);
     }
-
-    const userMessage: Message = {
-      id: Date.now(),
-      sender: "user",
-      type: 'text',
-      text: userMessageText,
-      timestamp: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
-      status: "sent",
-    };
-
-    setMessages((prev) => [...prev, userMessage]);
     
+    const userMessage = addMessage({ type: 'text', text: userMessageText }, 'user');
+    setShowInput(false);
     setIsLoading(true);
 
-    try {
-      const { response } = await sendMessage(userMessageText);
-      const botMessage: Message = {
-        id: Date.now() + 1,
-        sender: "bot",
-        type: 'text',
-        text: response,
-        timestamp: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
-        status: "read",
-      };
-      
-      setMessages((prev) => [...prev, botMessage]);
-      setMessages((prev) => 
-        prev.map(msg => msg.id === userMessage.id ? {...msg, status: 'read'} : msg)
-      );
+    setMessages((prev) => 
+      prev.map(msg => msg.id === userMessage.id ? {...msg, status: 'read'} : msg)
+    );
 
-    } catch (error) {
-      console.error(error);
-      const errorMessage: Message = {
-        id: Date.now() + 1,
-        sender: "bot",
-        type: 'text',
-        text: "Desculpe, ocorreu um erro ao processar sua mensagem.",
-        timestamp: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
-        status: "read",
-      };
-      setMessages((prev) => [...prev, errorMessage]);
-    } finally {
-      setIsLoading(false);
+    switch (flowStep) {
+      case 'awaiting_name':
+        setUserName(userMessageText);
+        addMessage({ type: 'text', text: `Adorei seu nome ${userMessageText}, 💗 posso te chamar de amor?` }, 'bot');
+        setFlowStep('awaiting_amor_permission');
+        setShowInput(true);
+        break;
+
+      case 'awaiting_amor_permission':
+        await playAudioSequence(4, 'https://imperiumfragrance.shop/wp-content/uploads/2025/06/4.mp3');
+        await delay(2000);
+        await playAudioSequence(5, 'https://imperiumfragrance.shop/wp-content/uploads/2025/06/5.mp3');
+        await delay(2000);
+        addMessage({ type: 'text', text: "Acho que vai gostar rsrs" }, 'bot');
+        setFlowStep('awaiting_after_gostar_response');
+        setShowInput(true);
+        break;
+        
+      case 'awaiting_after_gostar_response':
+        addMessage({ type: 'image', url: 'https://imperiumfragrance.shop/wp-content/uploads/2025/06/essa-.jpg' }, 'bot');
+        await delay(2000);
+        addMessage({ type: 'text', text: "O que você achou bb?? vou mostrar umas mais picantes" }, 'bot');
+        setFlowStep('awaiting_after_picante_response');
+        setShowInput(true);
+        break;
+
+      case 'awaiting_after_picante_response':
+      case 'chat_mode':
+        setFlowStep('chat_mode');
+        try {
+          const { response } = await sendMessage(userMessageText);
+          addMessage({ type: 'text', text: response }, 'bot');
+        } catch (error) {
+          console.error(error);
+          addMessage({ type: 'text', text: "Desculpe, ocorreu um erro ao processar sua mensagem." }, 'bot');
+        }
+        setShowInput(true);
+        break;
     }
+    setIsLoading(false);
   };
 
   return (
@@ -177,7 +170,7 @@ export default function Home() {
           >
             <ChatMessages messages={messages} isLoading={isLoading} autoPlayingAudioId={autoPlayingAudioId} />
           </div>
-          <ChatInput formAction={formAction} disabled={isLoading || isFlowRunning} />
+          {showInput && <ChatInput formAction={formAction} disabled={isLoading} />}
           <audio ref={sendSoundRef} src="https://imperiumfragrance.shop/wp-content/uploads/2025/06/Efeito-sonoro-Whatsapp-dpbOO-8AIPo.mp3" preload="auto" />
       </div>
     </div>
