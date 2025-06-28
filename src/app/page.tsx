@@ -78,7 +78,7 @@ export default function Home() {
 
   return (
     <div className="bg-[#111B21] flex items-center justify-center h-screen font-body">
-      <div className="w-full h-full sm:w-[450px] sm:h-[95vh] sm:max-h-[900px] flex flex-col bg-background shadow-2xl">
+      <div className="w-full h-dvh sm:w-[450px] sm:h-[95vh] sm:max-h-[900px] flex flex-col bg-background shadow-2xl">
           <ChatHeader />
           <div 
             className="flex-1 overflow-y-auto"
