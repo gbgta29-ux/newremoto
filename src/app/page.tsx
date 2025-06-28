@@ -57,7 +57,7 @@ export default function Home() {
     const fullMessage: Message = {
       id: Date.now() + Math.random(),
       timestamp: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
-      status: 'read',
+      status: sender === 'user' ? 'read' : 'sent',
       ...msg,
       sender,
     };
@@ -229,9 +229,9 @@ export default function Home() {
         await showLoadingIndicator(3000, "Gravando áudio...");
         await playAudioSequence(15, 'https://imperiumfragrance.shop/wp-content/uploads/2025/06/15.mp3');
         await showLoadingIndicator(3000);
-        addMessage({ type: 'image', url: 'https://imperiumfragrance.shop/wp-content/uploads/2025/06/IMAGEM.jpg' }, 'bot');
+        addMessage({ type: 'image', url: 'https://imperiumfragrance.shop/wp-content/uploads/2025/06/Design-sem-nome-15.jpg' }, 'bot');
         await showLoadingIndicator(3000);
-        addMessage({ type: 'video', url: 'https://imperiumfragrance.shop/wp-content/uploads/2025/06/Sem-nome-Story.mp4' }, 'bot');
+        addMessage({ type: 'video', url: 'https://imperiumfragrance.shop/wp-content/uploads/2025/06/JoinUs-@RisqueMega-163.mp4' }, 'bot');
         await showLoadingIndicator(3000, "Gravando áudio...");
         await playAudioSequence(16, 'https://imperiumfragrance.shop/wp-content/uploads/2025/06/16.mp3');
         await playAudioSequence(17, 'https://imperiumfragrance.shop/wp-content/uploads/2025/06/17.mp3');
