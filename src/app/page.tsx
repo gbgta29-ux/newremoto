@@ -7,7 +7,6 @@ import ChatHeader from "@/components/chat/chat-header";
 import ChatMessages from "@/components/chat/chat-messages";
 import ChatInput from "@/components/chat/chat-input";
 import { Button } from "@/components/ui/button";
-import Image from "next/image";
 import Link from "next/link";
 import { useToast } from "@/hooks/use-toast";
 import { Copy, RefreshCw } from 'lucide-react';
@@ -323,7 +322,8 @@ export default function Home() {
           {flowStep === 'awaiting_pix_payment' && pixData && (
             <div className="p-4 bg-background border-t border-border/20 flex flex-col items-center gap-4">
               {pixData.qrCode ? (
-                  <Image 
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img 
                       src={`data:image/png;base64,${pixData.qrCode}`} 
                       alt="PIX QR Code" 
                       width={200} 
