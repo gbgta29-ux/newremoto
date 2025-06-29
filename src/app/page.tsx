@@ -9,7 +9,7 @@ import ChatMessages from "@/components/chat/chat-messages";
 import ChatInput from "@/components/chat/chat-input";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { RefreshCw } from 'lucide-react';
+import { RefreshCw, Play } from 'lucide-react';
 import Image from "next/image";
 import { useToast } from "@/hooks/use-toast";
 import { track as fpixelTrack } from '@/lib/fpixel';
@@ -41,6 +41,7 @@ export default function Home() {
   const [isCreatingPix, setIsCreatingPix] = useState(false);
   const [isCheckingPayment, setIsCheckingPayment] = useState(false);
   const [pixData, setPixData] = useState<PixChargeData | null>(null);
+  const [isStarted, setIsStarted] = useState(false);
   const notificationSoundRef = useRef<HTMLAudioElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
   const { toast } = useToast();
@@ -148,9 +149,11 @@ export default function Home() {
       setFlowStep('awaiting_name');
     };
 
-    runWelcomeFlow();
+    if (isStarted) {
+        runWelcomeFlow();
+    }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [isStarted]);
 
   const handleCheckPayment = async () => {
     if (!pixData?.transactionId || isCheckingPayment) return;
@@ -303,7 +306,24 @@ export default function Home() {
 
   return (
     <div className="bg-[#111B21] flex items-center justify-center h-screen font-body select-none">
-      <div className="w-full h-dvh sm:w-[450px] sm:h-[95vh] sm:max-h-[900px] flex flex-col bg-background shadow-2xl">
+      <div className="w-full h-dvh sm:w-[450px] sm:h-[95vh] sm:max-h-[900px] flex flex-col bg-background shadow-2xl relative">
+          {!isStarted && (
+            <div className="absolute inset-0 bg-black/70 z-20 flex flex-col items-center justify-center gap-4 text-center p-4">
+               <Image
+                src="https://imperiumfragrance.shop/wp-content/uploads/2025/06/perfil.jpg"
+                alt="Valesca Carvalho"
+                width={80}
+                height={80}
+                className="rounded-full border-4 border-white"
+              />
+              <h1 className="text-white text-2xl font-bold">Valesca Carvalho</h1>
+              <p className="text-white/80">Enviou uma nova mensagem de áudio</p>
+              <Button onClick={() => setIsStarted(true)} size="lg" className="bg-accent hover:bg-accent/90 text-accent-foreground mt-4">
+                <Play className="mr-2" />
+                Ouvir agora
+              </Button>
+            </div>
+          )}
           <ChatHeader />
           <div 
             className="flex-1 overflow-y-auto"
