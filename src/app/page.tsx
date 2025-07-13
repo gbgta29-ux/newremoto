@@ -109,7 +109,7 @@ export default function Home() {
 
   useEffect(() => {
     const runWelcomeFlow = async () => {
-      let currentCity = 'São Paulo';
+      let currentCity = 'do Brasil';
       setCity(currentCity);
       
       await showLoadingIndicator(2000, "Gravando áudio...");
