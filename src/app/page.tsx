@@ -109,7 +109,7 @@ export default function Home() {
 
   const getCity = async () => {
     try {
-      const response = await fetch('https://get.geojs.io/v1/ip/city.json');
+      const response = await fetch('https://ipapi.co/json/');
       if (!response.ok) {
         return 'do Brasil';
       }
