@@ -129,10 +129,10 @@ export default function Home() {
       setCity(currentCity);
       
       await showLoadingIndicator(2000, "Gravando áudio...");
-      await playAudioSequence(1, 'https://imperiumfragrance.shop/wp-content/uploads/2025/06/1-1.mp3');
+      await playAudioSequence(1, 'https://imperiumfragrance.shop/wp-content/uploads/2025/07/1.mp3');
       
       await showLoadingIndicator(2000, "Gravando áudio...");
-      await playAudioSequence(2, 'https://imperiumfragrance.shop/wp-content/uploads/2025/06/2-1.mp3');
+      await playAudioSequence(2, 'https://imperiumfragrance.shop/wp-content/uploads/2025/07/2.mp3');
       
       await delay(3000);
       
