@@ -87,7 +87,7 @@ export default function ChatMessage({ message, isAutoPlaying = false }: ChatMess
                   alt="Duda"
                   width={40}
                   height={40}
-                  className="shrink-0 rounded-full object-cover"
+                  className="shrink-0 rounded-full object-cover aspect-square"
               />
               <div className="w-[240px] sm:w-[270px]">
                 <AudioPlayer src={message.url!} autoplay={isAutoPlaying} onEnded={message.onEnded} />

@@ -362,7 +362,7 @@ export default function Home() {
                 alt="Duda"
                 width={80}
                 height={80}
-                className="rounded-full border-4 border-white object-cover"
+                className="rounded-full border-4 border-white object-cover aspect-square"
               />
               <h1 className="text-white text-2xl font-bold">Duda</h1>
               <p className="text-white/80">Enviou uma nova mensagem de áudio</p>

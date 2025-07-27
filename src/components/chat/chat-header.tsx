@@ -14,7 +14,7 @@ export default function ChatHeader() {
         alt="Duda"
         width={40}
         height={40}
-        className="rounded-full object-cover"
+        className="rounded-full object-cover aspect-square"
       />
       <div className="ml-3 flex-1">
         <h1 className="font-semibold text-base leading-tight">Duda</h1>
