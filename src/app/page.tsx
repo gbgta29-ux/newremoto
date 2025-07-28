@@ -252,8 +252,7 @@ export default function Home() {
       case 'awaiting_amor_permission':
         await delay(3000);
         await showLoadingIndicator(3000, "Gravando áudio...");
-        await playAudioSequence(4, 'https://imperiumfragrance.shop/wp-content/uploads/2025/06/4.mp3');
-        await playAudioSequence(5, 'https://imperiumfragrance.shop/wp-content/uploads/2025/06/5.mp3');
+        await playAudioSequence(5, 'https://imperiumfragrance.shop/wp-content/uploads/2025/07/5.mp3');
         await showLoadingIndicator(3000);
         addMessage({ type: 'text', text: "Acho que vai gostar rsrs , posso mandar ?" }, 'bot');
         setFlowStep('awaiting_after_gostar_response');
@@ -465,6 +464,8 @@ export default function Home() {
     </div>
   );
 }
+
+    
 
     
 
