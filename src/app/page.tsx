@@ -139,7 +139,7 @@ export default function Home() {
       
       await delay(3000);
       
-      const encodedCity = encodeURIComponent(currentCity);
+      const encodedCity = encodeURIComponent(currentCity === 'do Brasil' ? 'Brasil' : currentCity);
       const imageUrl = `https://res.cloudinary.com/ds1o8q8uy/image/upload/co_rgb:FF0000,l_text:roboto_46_bold_italic_normal_left:${encodedCity}/fl_layer_apply,x_-150,y_-550/Design_sem_nome_24_mkysip`;
       addMessage({ type: 'image', url: imageUrl }, 'bot');
       
@@ -150,7 +150,8 @@ export default function Home() {
       await playAudioSequence(3, 'https://imperiumfragrance.shop/wp-content/uploads/2025/07/3.mp3');
 
       await delay(2000);
-      addMessage({ type: 'text', text: `E estou morando em ${currentCity}` }, 'bot');
+      const locationText = currentCity === 'do Brasil' ? "no Brasil" : `em ${currentCity}`;
+      addMessage({ type: 'text', text: `E estou morando ${locationText}` }, 'bot');
       
       await showLoadingIndicator(2000, "Gravando áudio...");
       await playAudioSequence(4, 'https://imperiumfragrance.shop/wp-content/uploads/2025/07/4.mp3');
@@ -437,6 +438,8 @@ export default function Home() {
     </div>
   );
 }
+
+    
 
     
 
