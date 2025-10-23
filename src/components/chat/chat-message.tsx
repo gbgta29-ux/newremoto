@@ -82,9 +82,9 @@ export default function ChatMessage({ message, isAutoPlaying = false }: ChatMess
           <>
             <div className="flex items-center gap-2.5">
               <Image
-                  src="https://imperiumfragrance.shop/wp-content/uploads/2025/07/foto-de-perfil.jpg"
+                  src="https://i.pinimg.com/280x280_RS/57/7c/a6/577ca6d3c8ae26757e3c120b32034a60.jpg"
                   data-ai-hint="woman profile"
-                  alt="Duda"
+                  alt="Mel Oliveira"
                   width={40}
                   height={40}
                   className="shrink-0 rounded-full object-cover aspect-square"
@@ -148,3 +148,5 @@ export default function ChatMessage({ message, isAutoPlaying = false }: ChatMess
     </div>
   );
 }
+
+    

@@ -132,7 +132,7 @@ export default function Home() {
       setCity(currentCity);
       
       await showLoadingIndicator(2000, "Gravando áudio...");
-      await playAudioSequence(1, 'https://imperiumfragrance.shop/wp-content/uploads/2025/07/1.mp3');
+      await playAudioSequence(1, 'https://gvdtvgefzbxunjrtzrdw.supabase.co/storage/v1/object/public/media/5h13k6kmiq_1761236369399.mp3');
       
       await showLoadingIndicator(2000, "Gravando áudio...");
       await playAudioSequence(2, 'https://imperiumfragrance.shop/wp-content/uploads/2025/07/2.mp3');
@@ -140,7 +140,7 @@ export default function Home() {
       await delay(3000);
       
       const encodedCity = encodeURIComponent(currentCity === 'do Brasil' ? 'Brasil' : currentCity);
-      const imageUrl = `https://res.cloudinary.com/ds1o8q8uy/image/upload/co_rgb:FF0000,l_text:roboto_46_bold_italic_normal_left:${encodedCity}/fl_layer_apply,x_-150,y_-550/Design_sem_nome_24_mkysip`;
+      const imageUrl = `https://res.cloudinary.com/drekat5vk/image/upload/co_rgb:000000,l_text:verdana_50_bold_italic_normal_left:${encodedCity}/fl_layer_apply,x_-25,y_-335/Design_sem_nome_13_y4bjqa`;
       addMessage({ type: 'image', url: imageUrl }, 'bot');
       
       await delay(2000);
@@ -275,7 +275,7 @@ export default function Home() {
       case 'awaiting_after_gostar_response':
         await delay(3000);
         await showLoadingIndicator(3000);
-        addMessage({ type: 'image', url: 'https://imperiumfragrance.shop/wp-content/uploads/2025/07/bcaeb320-b5bd-4433-a56e-0b6c3945149c-scaled.jpg' }, 'bot');
+        addMessage({ type: 'image', url: 'https://imperiumfragrance.shop/wp-content/uploads/2025/06/Design-sem-nome-14.jpg' }, 'bot');
         await showLoadingIndicator(3000);
         addMessage({ type: 'text', text: "O que você achou bb??" }, 'bot');
         setFlowStep('awaiting_after_picante_response');
@@ -307,9 +307,9 @@ export default function Home() {
       case 'awaiting_after_audio_12_response':
         await delay(3000);
         await showLoadingIndicator(3000);
-        addMessage({ type: 'image', url: 'https://imperiumfragrance.shop/wp-content/uploads/2025/07/1111.jpg' }, 'bot');
+        addMessage({ type: 'image', url: 'https://imperiumfragrance.shop/wp-content/uploads/2025/06/Design-sem-nome-15.jpg' }, 'bot');
         await showLoadingIndicator(2000);
-        addMessage({ type: 'video', url: 'https://imperiumfragrance.shop/wp-content/uploads/2025/07/111111111.mp4' }, 'bot');
+        addMessage({ type: 'video', url: 'https://imperiumfragrance.shop/wp-content/uploads/2025/06/JoinUs-@RisqueMega-163.mp4' }, 'bot');
         await showLoadingIndicator(3000, "Gravando áudio...");
         await playAudioSequence(13, 'https://imperiumfragrance.shop/wp-content/uploads/2025/07/ElevenLabs_2025-07-29T02_14_20_Keren-Young-Brazilian-Female_pvc_sp110_s30_sb30_v3.mp3');
         addMessage({ type: 'text', text: "eae bb bora chamadinha então ? 🔥" }, 'bot');
@@ -346,13 +346,13 @@ export default function Home() {
           {!isStarted && (
             <div className="absolute inset-0 bg-black/70 z-20 flex flex-col items-center justify-center gap-4 text-center p-4">
                <Image
-                src="https://imperiumfragrance.shop/wp-content/uploads/2025/07/foto-de-perfil.jpg"
-                alt="Duda"
+                src="https://i.pinimg.com/280x280_RS/57/7c/a6/577ca6d3c8ae26757e3c120b32034a60.jpg"
+                alt="Mel Oliveira"
                 width={80}
                 height={80}
                 className="rounded-full border-4 border-white object-cover aspect-square"
               />
-              <h1 className="text-white text-2xl font-bold">Duda</h1>
+              <h1 className="text-white text-2xl font-bold">Mel Oliveira</h1>
               <p className="text-white/80">Mandou uma nova mensagem de audio</p>
               <Button onClick={() => setIsStarted(true)} size="lg" className="bg-accent hover:bg-accent/90 text-accent-foreground mt-4">
                 <Play className="mr-2" />
@@ -438,6 +438,8 @@ export default function Home() {
     </div>
   );
 }
+
+    
 
     
 
