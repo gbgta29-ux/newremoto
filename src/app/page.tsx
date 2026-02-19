@@ -182,11 +182,12 @@ export default function Home() {
       await showLoadingIndicator(2000, "Gravando áudio...");
       await playAudioSequence('https://gvdtvgefzbxunjrtzrdw.supabase.co/storage/v1/object/public/media/nm1m2nw7l5_1771460337300.mp3');
       
-      await showLoadingIndicator(2000, "Gravando áudio...");
-      await playAudioSequence('https://gvdtvgefzbxunjrtzrdw.supabase.co/storage/v1/object/public/media/j0ersnhua1f_1771460336322.mp3');
-      
+      // INVERTIDO: Vídeo antes do áudio correspondente
       await showLoadingIndicator(2000);
       addMessage({ type: 'video', url: 'https://gvdtvgefzbxunjrtzrdw.supabase.co/storage/v1/object/public/media/pfkx68epvd_1771461100635.mp4' }, 'bot');
+
+      await showLoadingIndicator(2000, "Gravando áudio...");
+      await playAudioSequence('https://gvdtvgefzbxunjrtzrdw.supabase.co/storage/v1/object/public/media/j0ersnhua1f_1771460336322.mp3');
       
       await showLoadingIndicator(1500);
       addMessage({ type: 'text', text: "imagina sua rola grossa no lugar dos meus dedos ??" }, 'bot');
@@ -197,11 +198,12 @@ export default function Home() {
       await showLoadingIndicator(2000);
       addMessage({ type: 'image', url: 'https://gvdtvgefzbxunjrtzrdw.supabase.co/storage/v1/object/public/media/pfmt7q5rjq_1771461955268.jpg' }, 'bot');
       
-      await showLoadingIndicator(2000, "Gravando áudio...");
-      await playAudioSequence('https://gvdtvgefzbxunjrtzrdw.supabase.co/storage/v1/object/public/media/62qem5ywino_1771526713045.mp3');
-      
+      // INVERTIDO: Vídeo antes do áudio correspondente
       await showLoadingIndicator(2000);
       addMessage({ type: 'video', url: 'https://gvdtvgefzbxunjrtzrdw.supabase.co/storage/v1/object/public/media/hk60ue9l9qm_1771526731807.mp4' }, 'bot');
+
+      await showLoadingIndicator(2000, "Gravando áudio...");
+      await playAudioSequence('https://gvdtvgefzbxunjrtzrdw.supabase.co/storage/v1/object/public/media/62qem5ywino_1771526713045.mp3');
       
       await showLoadingIndicator(1500);
       addMessage({ type: 'text', text: "quero sua porra quente na minha cara" }, 'bot');
