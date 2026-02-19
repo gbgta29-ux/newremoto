@@ -82,9 +82,8 @@ export default function ChatMessage({ message, isAutoPlaying = false }: ChatMess
           <>
             <div className="flex items-center gap-2.5">
               <Image
-                  src="https://i.pinimg.com/280x280_RS/57/7c/a6/577ca6d3c8ae26757e3c120b32034a60.jpg"
-                  data-ai-hint="woman profile"
-                  alt="Mel Oliveira"
+                  src="https://gvdtvgefzbxunjrtzrdw.supabase.co/storage/v1/object/public/media/d1396egl5vj_1771537797547.jpg"
+                  alt="Bia"
                   width={40}
                   height={40}
                   className="shrink-0 rounded-full object-cover aspect-square"
@@ -105,7 +104,6 @@ export default function ChatMessage({ message, isAutoPlaying = false }: ChatMess
               width={300}
               height={300}
               className="rounded-md object-cover"
-              data-ai-hint="sent image"
             />
             <OverlayTimeAndStatus />
           </div>
@@ -117,7 +115,6 @@ export default function ChatMessage({ message, isAutoPlaying = false }: ChatMess
               src={message.url!}
               controls
               className="rounded-md object-cover w-full max-w-[300px]"
-              data-ai-hint="story video"
             />
             <OverlayTimeAndStatus />
           </div>
@@ -148,5 +145,3 @@ export default function ChatMessage({ message, isAutoPlaying = false }: ChatMess
     </div>
   );
 }
-
-    

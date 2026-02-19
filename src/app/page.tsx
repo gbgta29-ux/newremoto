@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useRef } from "react";
@@ -10,24 +11,17 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { RefreshCw, Play } from 'lucide-react';
 import Image from "next/image";
-import { useToast } from "@/hooks/use-toast";
 import { track as fpixelTrack } from '@/lib/fpixel';
 
 type FlowStep = 
   | 'initial'
   | 'awaiting_name'
-  | 'awaiting_amor_permission'
-  | 'awaiting_after_gostar_response'
-  | 'awaiting_after_picante_response'
-  | 'awaiting_after_audio_10_response'
-  | 'awaiting_after_audio_12_response'
-  | 'awaiting_after_audio_14_response'
-  | 'awaiting_pix_confirmation_response'
+  | 'flow_sequencing'
   | 'awaiting_pix_payment'
   | 'payment_confirmed_awaiting_upsell_choice'
   | 'awaiting_upsell_pix_payment'
   | 'upsell_payment_confirmed'
-  | 'flow_complete_video_only'
+  | 'flow_complete_redirect'
   | 'chat_mode';
 
 export default function Home() {
@@ -38,39 +32,15 @@ export default function Home() {
   const [showInput, setShowInput] = useState(false);
   const [flowStep, setFlowStep] = useState<FlowStep>('initial');
   const [userName, setUserName] = useState('');
-  const [city, setCity] = useState('do Brasil');
   const [isCreatingPix, setIsCreatingPix] = useState(false);
   const [isCheckingPayment, setIsCheckingPayment] = useState(false);
   const [pixData, setPixData] = useState<PixChargeData | null>(null);
   const [upsellPixData, setUpsellPixData] = useState<PixChargeData | null>(null);
   const [isStarted, setIsStarted] = useState(false);
   const notificationSoundRef = useRef<HTMLAudioElement>(null);
-  const { toast } = useToast();
 
   const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
   
-  useEffect(() => {
-    const handleContextMenu = (e: MouseEvent) => e.preventDefault();
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (
-        e.key === "F12" ||
-        (e.ctrlKey && e.shiftKey && (e.key === "I" || e.key === "i" || e.key === "J" || e.key === "j")) ||
-        (e.ctrlKey && (e.key === "U" || e.key === "u")) ||
-        (e.ctrlKey && (e.key === "S" || e.key === "s"))
-      ) {
-        e.preventDefault();
-      }
-    };
-
-    document.addEventListener("contextmenu", handleContextMenu);
-    document.addEventListener("keydown", handleKeyDown);
-
-    return () => {
-      document.removeEventListener("contextmenu", handleContextMenu);
-      document.removeEventListener("keydown", handleKeyDown);
-    };
-  }, []);
-
   const playNotificationSound = () => {
     notificationSoundRef.current?.play().catch(console.error);
   }
@@ -90,14 +60,11 @@ export default function Home() {
     return fullMessage;
   };
   
-  const playAudioSequence = async (audioId: number, url: string) => {
-    playNotificationSound();
-    await delay(500);
-    await new Promise<void>(resolve => {
+  const playAudioSequence = async (url: string) => {
+    return new Promise<void>(resolve => {
         const audioMessage = addMessage({ type: 'audio', url, onEnded: resolve }, 'bot');
         setAutoPlayingAudioId(audioMessage.id);
     });
-    setAutoPlayingAudioId(null);
   };
   
   const showLoadingIndicator = async (duration: number, text: string = "Digitando...") => {
@@ -107,56 +74,14 @@ export default function Home() {
       setIsLoading(false);
   };
 
-  const getCity = async () => {
-    try {
-      const response = await fetch('https://get.geojs.io/v1/ip/city.json');
-      if (!response.ok) {
-        const fallbackResponse = await fetch('https://ipapi.co/json/');
-         if(!fallbackResponse.ok) return 'do Brasil';
-        const fallbackData = await fallbackResponse.json();
-        return fallbackData.city || 'do Brasil'
-      }
-      const data = await response.json();
-      const city = data.city ? decodeURIComponent(escape(data.city)) : 'do Brasil';
-      return city;
-    } catch (error) {
-      console.error("Error fetching city:", error);
-      return 'do Brasil';
-    }
-  };
-
   useEffect(() => {
     const runWelcomeFlow = async () => {
-      const currentCity = await getCity();
-      setCity(currentCity);
-      
       await showLoadingIndicator(2000, "Gravando áudio...");
-      await playAudioSequence(1, 'https://gvdtvgefzbxunjrtzrdw.supabase.co/storage/v1/object/public/media/5h13k6kmiq_1761236369399.mp3');
+      await playAudioSequence('https://gvdtvgefzbxunjrtzrdw.supabase.co/storage/v1/object/public/media/pdsk8muifi_1771460338060.mp3');
+      setAutoPlayingAudioId(null);
       
-      await showLoadingIndicator(2000, "Gravando áudio...");
-      await playAudioSequence(2, 'https://imperiumfragrance.shop/wp-content/uploads/2025/07/2.mp3');
-      
-      await delay(3000);
-      
-      const encodedCity = encodeURIComponent(currentCity === 'do Brasil' ? 'Brasil' : currentCity);
-      const imageUrl = `https://res.cloudinary.com/drekat5vk/image/upload/co_rgb:000000,l_text:verdana_50_bold_italic_normal_left:${encodedCity}/fl_layer_apply,x_-25,y_-335/Design_sem_nome_13_y4bjqa`;
-      addMessage({ type: 'image', url: imageUrl }, 'bot');
-      
-      await delay(2000);
-      addMessage({ type: 'text', text: "Essa foto eu tirei hoje mais cedo ❤🔥" }, 'bot');
-      
-      await showLoadingIndicator(2000, "Gravando áudio...");
-      await playAudioSequence(3, 'https://imperiumfragrance.shop/wp-content/uploads/2025/07/3.mp3');
-
-      await delay(2000);
-      const locationText = currentCity === 'do Brasil' ? "no Brasil" : `em ${currentCity}`;
-      addMessage({ type: 'text', text: `E estou morando ${locationText}` }, 'bot');
-      
-      await showLoadingIndicator(2000, "Gravando áudio...");
-      await playAudioSequence(4, 'https://imperiumfragrance.shop/wp-content/uploads/2025/07/4.mp3');
-      
-      await delay(2000);
-      addMessage({ type: 'text', text: "Qual seu nome, bb? 💗" }, 'bot');
+      await showLoadingIndicator(1000);
+      addMessage({ type: 'text', text: "me fala seu nome…" }, 'bot');
       
       setShowInput(true);
       setFlowStep('awaiting_name');
@@ -172,7 +97,7 @@ export default function Home() {
     setIsCreatingPix(true);
     if (!isUpsell) {
         addMessage({ type: 'text', text: "vou mandar meu pix pra você bb... 😍" }, 'bot');
-        await showLoadingIndicator(3000);
+        await showLoadingIndicator(2000);
     }
     
     const charge = await createPixCharge(value);
@@ -180,17 +105,17 @@ export default function Home() {
       fpixelTrack('InitiateCheckout', { value: value / 100, currency: 'BRL' });
       if(isUpsell) {
         setUpsellPixData(charge);
-        addMessage({ type: 'pix', sender: 'bot', pixCopyPaste: charge.pixCopyPaste, value: value / 100 });
         setFlowStep('awaiting_upsell_pix_payment');
+        addMessage({ type: 'pix', sender: 'bot', pixCopyPaste: charge.pixCopyPaste, value: value / 100 });
       } else {
         setPixData(charge);
         setFlowStep('awaiting_pix_payment');
-        addMessage({ type: 'text', text: `Prontinho amor, o valor é só R$${(value / 100).toFixed(2).replace('.', ',')}. Faz o pagamento pra gente gozar na chamada de vídeo...` }, 'bot');
+        addMessage({ type: 'text', text: `Prontinho amor, faz o pagamento pra gente ir pra nossa chamadinha...` }, 'bot');
         addMessage({ type: 'pix', sender: 'bot', pixCopyPaste: charge.pixCopyPaste, value: value / 100 });
       }
     } else {
-      addMessage({ type: 'text', text: "Ops, não consegui gerar o PIX agora, amor. Tenta de novo em um minutinho." }, 'bot');
-      setFlowStep(isUpsell ? 'payment_confirmed_awaiting_upsell_choice' : 'awaiting_after_audio_14_response');
+      addMessage({ type: 'text', text: "Ops, não consegui gerar o PIX agora, amor. Tenta de novo." }, 'bot');
+      setFlowStep(isUpsell ? 'payment_confirmed_awaiting_upsell_choice' : 'flow_sequencing');
       if(!isUpsell) setShowInput(true); 
     }
     setIsCreatingPix(false);
@@ -199,48 +124,44 @@ export default function Home() {
   const handleCheckPayment = async (txId: string, value: number, isUpsell: boolean = false) => {
     if (!txId || isCheckingPayment) return;
 
-    addMessage({ type: 'text', text: "Já paguei" }, 'user');
-    
     setIsCheckingPayment(true);
     await showLoadingIndicator(2000);
     addMessage({ type: 'text', text: "Ok amor, só um momento que vou verificar... 😍" }, 'bot');
     
-    await delay(10000);
+    await delay(6000); // Simulando verificação
 
     const result = await checkPaymentStatus(txId);
 
     if (result?.status === 'paid') {
       fpixelTrack('Purchase', { value: value / 100, currency: 'BRL' });
       if (isUpsell) {
-        addMessage({ type: 'text', text: "Pagamento confirmado, gostoso! 🔥 Clica no botão abaixo pra gente conversar no WhatsApp agora mesmo!" }, 'bot');
+        addMessage({ type: 'text', text: "Pagamento confirmado, gostoso! 🔥 Clique abaixo para pegar meu WhatsApp agora!" }, 'bot');
         setFlowStep('upsell_payment_confirmed');
       } else {
         await showLoadingIndicator(2000, "Gravando áudio...");
-        await playAudioSequence(20, 'https://imperiumfragrance.shop/wp-content/uploads/2025/07/ElevenLabs_2025-07-25T23_51_20_Keren-Young-Brazilian-Female_pvc_sp110_s30_sb30_v3.mp3');
-        addMessage({ type: 'text', text: "Amor, acabei de liberar meu número pessoal pra você... Quer pagar só mais R$ 20,00 pra gente conversar por lá? 😏" }, 'bot');
+        await playAudioSequence('https://gvdtvgefzbxunjrtzrdw.supabase.co/storage/v1/object/public/media/gdcqcftspd4_1771537290599.mp3');
+        setAutoPlayingAudioId(null);
+        addMessage({ type: 'text', text: "Amor, o pagamento caiu! 😍 Quer meu número pessoal do WhatsApp agora também pra gente conversar por lá sempre?" }, 'bot');
         setFlowStep('payment_confirmed_awaiting_upsell_choice');
       }
     } else {
-      await playAudioSequence(19, 'https://imperiumfragrance.shop/wp-content/uploads/2025/07/ElevenLabs_2025-07-26T21_25_01_Keren-Young-Brazilian-Female_pvc_sp110_s30_sb30_v3-1.mp3');
+      // Pagamento não aprovado
+      await showLoadingIndicator(2000, "Gravando áudio...");
+      await playAudioSequence('https://gvdtvgefzbxunjrtzrdw.supabase.co/storage/v1/object/public/media/0aui1dajmnvk_1771537138947.mp3');
+      setAutoPlayingAudioId(null);
     }
     setIsCheckingPayment(false);
   };
 
   const handleUpsellChoice = async (choice: 'yes' | 'no') => {
-    setFlowStep('initial'); // Disable buttons
     if (choice === 'yes') {
-        addMessage({ type: 'text', text: 'Sim, eu quero!' }, 'user');
-        setIsCreatingPix(true);
-        await showLoadingIndicator(2000);
-        addMessage({ type: 'text', text: 'Oba! Sabia que você ia querer, amor. Vou gerar o PIX de R$20,00 pra você.' }, 'bot');
-        await handleCreatePix(2000, true);
-        setIsCreatingPix(false);
-
+        addMessage({ type: 'text', text: 'Quero' }, 'user');
+        await handleCreatePix(1400, true);
     } else {
-        addMessage({ type: 'text', text: 'Não, obrigado' }, 'user');
+        addMessage({ type: 'text', text: 'Quero só a chamadinha' }, 'user');
         await showLoadingIndicator(2000);
-        addMessage({ type: 'text', text: 'Tudo bem, amor. Sem problemas! Podemos fazer só a chamada de vídeo então. Clica no botão abaixo pra gente começar. 😍' }, 'bot');
-        setFlowStep('flow_complete_video_only');
+        addMessage({ type: 'text', text: 'Tudo bem, amor! Clique abaixo para iniciar nossa chamada.' }, 'bot');
+        setFlowStep('flow_complete_redirect');
     }
   }
 
@@ -251,91 +172,60 @@ export default function Home() {
     addMessage({ type: 'text', text: userMessageText }, 'user');
     setShowInput(false);
 
-    switch (flowStep) {
-      case 'awaiting_name':
-        setUserName(userMessageText);
-        await delay(3000);
-        await showLoadingIndicator(3000);
-        addMessage({ type: 'text', text: `Adorei seu nome ${userMessageText}, 💗 posso te chamar de amor?` }, 'bot');
-        setFlowStep('awaiting_amor_permission');
-        setShowInput(true);
-        break;
-
-      case 'awaiting_amor_permission':
-        await delay(3000);
-        await showLoadingIndicator(3000, "Gravando áudio...");
-        await playAudioSequence(5, 'https://imperiumfragrance.shop/wp-content/uploads/2025/07/5.mp3');
-        await showLoadingIndicator(3000);
-        addMessage({ type: 'text', text: "Acho que vai gostar rsrs , posso mandar ?" }, 'bot');
-        setFlowStep('awaiting_after_gostar_response');
-        setShowInput(true);
-        break;
-        
-      case 'awaiting_after_gostar_response':
-        await delay(3000);
-        await showLoadingIndicator(3000);
-        addMessage({ type: 'image', url: 'https://imperiumfragrance.shop/wp-content/uploads/2025/06/Design-sem-nome-14.jpg' }, 'bot');
-        await showLoadingIndicator(3000);
-        addMessage({ type: 'text', text: "O que você achou bb??" }, 'bot');
-        setFlowStep('awaiting_after_picante_response');
-        setShowInput(true);
-        break;
-
-      case 'awaiting_after_picante_response':
-        await delay(3000);
-        await showLoadingIndicator(3000, "Gravando áudio...");
-        await playAudioSequence(6, 'https://imperiumfragrance.shop/wp-content/uploads/2025/07/6.mp3');
-        await playAudioSequence(7, 'https://imperiumfragrance.shop/wp-content/uploads/2025/07/7.mp3');
-        
-        await delay(3000);
-        await showLoadingIndicator(3000, "Gravando áudio...");
-        await playAudioSequence(9, 'https://imperiumfragrance.shop/wp-content/uploads/2025/07/9.mp3');
-
-        await delay(3000);
-        await showLoadingIndicator(3000, "Gravando áudio...");
-        await playAudioSequence(10, 'https://imperiumfragrance.shop/wp-content/uploads/2025/07/10.mp3');
-
-        await delay(2000);
-        addMessage({ type: 'text', text: "quer ver minha bucetinha amorzinho ??" }, 'bot');
-
-        setFlowStep('awaiting_after_audio_10_response');
-        setShowInput(true);
-        break;
-
-      case 'awaiting_after_audio_10_response':
-      case 'awaiting_after_audio_12_response':
-        await delay(3000);
-        await showLoadingIndicator(3000);
-        addMessage({ type: 'image', url: 'https://imperiumfragrance.shop/wp-content/uploads/2025/06/Design-sem-nome-15.jpg' }, 'bot');
-        await showLoadingIndicator(2000);
-        addMessage({ type: 'video', url: 'https://imperiumfragrance.shop/wp-content/uploads/2025/06/JoinUs-@RisqueMega-163.mp4' }, 'bot');
-        await showLoadingIndicator(3000, "Gravando áudio...");
-        await playAudioSequence(13, 'https://imperiumfragrance.shop/wp-content/uploads/2025/07/ElevenLabs_2025-07-29T02_14_20_Keren-Young-Brazilian-Female_pvc_sp110_s30_sb30_v3.mp3');
-        addMessage({ type: 'text', text: "eae bb bora chamadinha então ? 🔥" }, 'bot');
-        setFlowStep('awaiting_after_audio_14_response');
-        setShowInput(true);
-        break;
-
-      case 'awaiting_after_audio_14_response':
-        await delay(3000);
-        await showLoadingIndicator(3000, "Gravando áudio...");
-        await playAudioSequence(15, 'https://imperiumfragrance.shop/wp-content/uploads/2025/07/ElevenLabs_2025-07-29T02_35_12_Keren-Young-Brazilian-Female_pvc_sp110_s30_sb30_v3.mp3');
-        await playAudioSequence(16, 'https://imperiumfragrance.shop/wp-content/uploads/2025/07/ElevenLabs_2025-07-29T02_40_26_Keren-Young-Brazilian-Female_pvc_sp110_s30_sb30_v3.mp3');
-        await playAudioSequence(17, 'https://imperiumfragrance.shop/wp-content/uploads/2025/07/ElevenLabs_2025-07-25T22_43_08_Keren-Young-Brazilian-Female_pvc_sp110_s30_sb30_v3.mp3');
-        await handleCreatePix(1499);
-        break;
+    if (flowStep === 'awaiting_name') {
+      const name = userMessageText;
+      setUserName(name);
       
-      case 'chat_mode':
-        try {
-          await showLoadingIndicator(1500);
-          const { response } = await sendMessage(userMessageText);
-          addMessage({ type: 'text', text: response }, 'bot');
-        } catch (error) {
-          console.error(error);
-          addMessage({ type: 'text', text: "Desculpe, ocorreu um erro ao processar sua mensagem." }, 'bot');
-        }
-        setShowInput(true);
-        break;
+      await showLoadingIndicator(2000);
+      addMessage({ type: 'text', text: `${name}… hmm… que delícia de nome.` }, 'bot');
+      
+      await showLoadingIndicator(2000, "Gravando áudio...");
+      await playAudioSequence('https://gvdtvgefzbxunjrtzrdw.supabase.co/storage/v1/object/public/media/nm1m2nw7l5_1771460337300.mp3');
+      
+      await showLoadingIndicator(2000, "Gravando áudio...");
+      await playAudioSequence('https://gvdtvgefzbxunjrtzrdw.supabase.co/storage/v1/object/public/media/j0ersnhua1f_1771460336322.mp3');
+      
+      await showLoadingIndicator(2000);
+      addMessage({ type: 'video', url: 'https://gvdtvgefzbxunjrtzrdw.supabase.co/storage/v1/object/public/media/pfkx68epvd_1771461100635.mp4' }, 'bot');
+      
+      await showLoadingIndicator(1500);
+      addMessage({ type: 'text', text: "imagina sua rola grossa no lugar dos meus dedos ??" }, 'bot');
+      
+      await showLoadingIndicator(2000, "Gravando áudio...");
+      await playAudioSequence('https://gvdtvgefzbxunjrtzrdw.supabase.co/storage/v1/object/public/media/2op9h6qgtlc_1771461753269.mp3');
+      
+      await showLoadingIndicator(2000);
+      addMessage({ type: 'image', url: 'https://gvdtvgefzbxunjrtzrdw.supabase.co/storage/v1/object/public/media/pfmt7q5rjq_1771461955268.jpg' }, 'bot');
+      
+      await showLoadingIndicator(2000, "Gravando áudio...");
+      await playAudioSequence('https://gvdtvgefzbxunjrtzrdw.supabase.co/storage/v1/object/public/media/62qem5ywino_1771526713045.mp3');
+      
+      await showLoadingIndicator(2000);
+      addMessage({ type: 'video', url: 'https://gvdtvgefzbxunjrtzrdw.supabase.co/storage/v1/object/public/media/hk60ue9l9qm_1771526731807.mp4' }, 'bot');
+      
+      await showLoadingIndicator(1500);
+      addMessage({ type: 'text', text: "quero sua porra quente na minha cara" }, 'bot');
+      
+      await showLoadingIndicator(2000);
+      addMessage({ type: 'text', text: `${name}… minha buceta tá escorrendo até o cu, meu cuzinho tá piscando pedindo sua rola.` }, 'bot');
+      
+      await showLoadingIndicator(2000, "Gravando áudio...");
+      await playAudioSequence('https://gvdtvgefzbxunjrtzrdw.supabase.co/storage/v1/object/public/media/a8tha6a0n4s_1771527109081.mp3');
+      
+      await showLoadingIndicator(1500);
+      addMessage({ type: 'text', text: "olha como eu to agora te esperando" }, 'bot');
+      
+      await showLoadingIndicator(2000);
+      addMessage({ type: 'image', url: 'https://gvdtvgefzbxunjrtzrdw.supabase.co/storage/v1/object/public/media/m23yme7ft0r_1771527255525.jpg' }, 'bot');
+      
+      await showLoadingIndicator(2000, "Gravando áudio...");
+      await playAudioSequence('https://gvdtvgefzbxunjrtzrdw.supabase.co/storage/v1/object/public/media/qywyirtrr1_1771527488434.mp3');
+      
+      await showLoadingIndicator(2000, "Gravando áudio...");
+      await playAudioSequence('https://gvdtvgefzbxunjrtzrdw.supabase.co/storage/v1/object/public/media/v08xzrhvxya_1771537020760.mp3');
+      
+      setAutoPlayingAudioId(null);
+      await handleCreatePix(1499);
     }
   };
 
@@ -345,13 +235,13 @@ export default function Home() {
           {!isStarted && (
             <div className="absolute inset-0 bg-black/70 z-20 flex flex-col items-center justify-center gap-4 text-center p-4">
                <Image
-                src="https://i.pinimg.com/280x280_RS/57/7c/a6/577ca6d3c8ae26757e3c120b32034a60.jpg"
-                alt="Mel Oliveira"
+                src="https://gvdtvgefzbxunjrtzrdw.supabase.co/storage/v1/object/public/media/d1396egl5vj_1771537797547.jpg"
+                alt="Bia"
                 width={80}
                 height={80}
                 className="rounded-full border-4 border-white object-cover aspect-square"
               />
-              <h1 className="text-white text-2xl font-bold">Mel Oliveira</h1>
+              <h1 className="text-white text-2xl font-bold">Bia</h1>
               <p className="text-white/80">Mandou uma nova mensagem de audio</p>
               <Button onClick={() => setIsStarted(true)} size="lg" className="bg-accent hover:bg-accent/90 text-accent-foreground mt-4">
                 <Play className="mr-2" />
@@ -373,19 +263,15 @@ export default function Home() {
 
           {(flowStep === 'awaiting_pix_payment' || flowStep === 'awaiting_upsell_pix_payment') && (
             <div className="p-4 bg-background border-t border-border/20 flex flex-col items-center gap-4">
-              <div className="flex items-center text-sm text-muted-foreground">
-                <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
-                <span>Aguardando pagamento...</span>
-              </div>
               <Button
                   onClick={() => {
                     if (flowStep === 'awaiting_pix_payment' && pixData) {
                       handleCheckPayment(pixData.transactionId, 1499, false);
                     } else if (flowStep === 'awaiting_upsell_pix_payment' && upsellPixData) {
-                       handleCheckPayment(upsellPixData.transactionId, 2000, true);
+                       handleCheckPayment(upsellPixData.transactionId, 1400, true);
                     }
                   }}
-                  disabled={isCheckingPayment || (flowStep === 'awaiting_pix_payment' && !pixData) || (flowStep === 'awaiting_upsell_pix_payment' && !upsellPixData)}
+                  disabled={isCheckingPayment}
                   className="w-full bg-primary text-primary-foreground font-bold text-lg py-6 rounded-full shadow-lg hover:bg-primary/90"
               >
                   {isCheckingPayment ? (
@@ -401,30 +287,20 @@ export default function Home() {
           )}
           
           {flowStep === 'payment_confirmed_awaiting_upsell_choice' && (
-             <div className="p-4 bg-background border-t border-border/20 flex items-center justify-center gap-4">
+             <div className="p-4 bg-background border-t border-border/20 flex flex-col gap-3">
                 <Button onClick={() => handleUpsellChoice('yes')} className="w-full bg-accent text-accent-foreground font-bold text-lg py-6 rounded-full shadow-lg hover:bg-accent/90">
-                    Sim, eu quero!
+                    Quero
                 </Button>
-                <Button onClick={() => handleUpsellChoice('no')} className="w-full bg-destructive text-destructive-foreground font-bold text-lg py-6 rounded-full shadow-lg hover:bg-destructive/90">
-                    Não, obrigado
+                <Button onClick={() => handleUpsellChoice('no')} variant="outline" className="w-full font-bold text-lg py-6 rounded-full">
+                    Quero só a chamadinha
                 </Button>
             </div>
           )}
 
-          {flowStep === 'upsell_payment_confirmed' && (
+          {(flowStep === 'upsell_payment_confirmed' || flowStep === 'flow_complete_redirect') && (
              <div className="p-4 bg-background border-t border-border/20 flex justify-center">
               <Button asChild className="w-full bg-accent text-accent-foreground font-bold text-lg py-6 rounded-full shadow-lg hover:bg-accent/90">
-                <Link href="https://wa.me/554399540418?text=oi%20mel%2C%20comprei%20sua%20chamadinha%20de%20v%C3%ADd" target="_blank">
-                  Conversar no WhatsApp
-                </Link>
-              </Button>
-            </div>
-          )}
-
-          {flowStep === 'flow_complete_video_only' && (
-             <div className="p-4 bg-background border-t border-border/20 flex justify-center">
-              <Button asChild className="w-full bg-accent text-accent-foreground font-bold text-lg py-6 rounded-full shadow-lg hover:bg-accent/90">
-                <Link href="https://tranquil-hummingbird-1d25e8.netlify.app/" target="_blank">
+                <Link href="https://unrivaled-cascaron-259617.netlify.app/" target="_blank">
                   Iniciar chamada de vídeo
                 </Link>
               </Button>
