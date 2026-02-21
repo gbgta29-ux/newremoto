@@ -181,7 +181,7 @@ export default function Home() {
       addMessage({ type: 'text', text: `${name}… hmm… que delícia de nome.` }, 'bot');
       
       await showLoadingIndicator(4000, "Gravando áudio...");
-      await playAudioSequence('https://gvdtvgefzbxunjrtzrdw.supabase.co/storage/v1/object/public/media/nm1m2nw7l5_1771460337300.mp3');
+      await playAudioSequence('https://gvdtvgefzbxunjrtzrdw.supabase.co/storage/v1/object/public/media/uks5c0veyc_1771702629528.mp3');
       
       await showLoadingIndicator(4000);
       addMessage({ type: 'video', url: 'https://gvdtvgefzbxunjrtzrdw.supabase.co/storage/v1/object/public/media/pfkx68epvd_1771461100635.mp4' }, 'bot');
