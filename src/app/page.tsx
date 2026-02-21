@@ -16,6 +16,7 @@ import { track as fpixelTrack } from '@/lib/fpixel';
 type FlowStep = 
   | 'initial'
   | 'awaiting_name'
+  | 'awaiting_fantasy_response'
   | 'flow_sequencing'
   | 'awaiting_pix_payment'
   | 'payment_confirmed_awaiting_upsell_choice'
@@ -76,11 +77,11 @@ export default function Home() {
 
   useEffect(() => {
     const runWelcomeFlow = async () => {
-      await showLoadingIndicator(2000, "Gravando áudio...");
+      await showLoadingIndicator(4000, "Gravando áudio...");
       await playAudioSequence('https://gvdtvgefzbxunjrtzrdw.supabase.co/storage/v1/object/public/media/pdsk8muifi_1771460338060.mp3');
       setAutoPlayingAudioId(null);
       
-      await showLoadingIndicator(1000);
+      await showLoadingIndicator(4000);
       addMessage({ type: 'text', text: "me fala seu nome…" }, 'bot');
       
       setShowInput(true);
@@ -97,7 +98,7 @@ export default function Home() {
     setIsCreatingPix(true);
     if (!isUpsell) {
         addMessage({ type: 'text', text: "vou mandar meu pix pra você bb... 😍" }, 'bot');
-        await showLoadingIndicator(2000);
+        await showLoadingIndicator(4000);
     }
     
     const charge = await createPixCharge(value);
@@ -125,7 +126,7 @@ export default function Home() {
     if (!txId || isCheckingPayment) return;
 
     setIsCheckingPayment(true);
-    await showLoadingIndicator(2000);
+    await showLoadingIndicator(4000);
     addMessage({ type: 'text', text: "Ok amor, só um momento que vou verificar... 😍" }, 'bot');
     
     await delay(6000); // Simulando verificação
@@ -138,7 +139,7 @@ export default function Home() {
         addMessage({ type: 'text', text: "Pagamento confirmado, gostoso! 🔥 Clique abaixo para pegar meu WhatsApp agora!" }, 'bot');
         setFlowStep('upsell_payment_confirmed');
       } else {
-        await showLoadingIndicator(2000, "Gravando áudio...");
+        await showLoadingIndicator(4000, "Gravando áudio...");
         await playAudioSequence('https://gvdtvgefzbxunjrtzrdw.supabase.co/storage/v1/object/public/media/gdcqcftspd4_1771537290599.mp3');
         setAutoPlayingAudioId(null);
         addMessage({ type: 'text', text: "Amor, o pagamento caiu! 😍 Quer meu número pessoal do WhatsApp agora também pra gente conversar por lá sempre?" }, 'bot');
@@ -146,7 +147,7 @@ export default function Home() {
       }
     } else {
       // Pagamento não aprovado
-      await showLoadingIndicator(2000, "Gravando áudio...");
+      await showLoadingIndicator(4000, "Gravando áudio...");
       await playAudioSequence('https://gvdtvgefzbxunjrtzrdw.supabase.co/storage/v1/object/public/media/0aui1dajmnvk_1771537138947.mp3');
       setAutoPlayingAudioId(null);
     }
@@ -159,7 +160,7 @@ export default function Home() {
         await handleCreatePix(1400, true);
     } else {
         addMessage({ type: 'text', text: 'Quero só a chamadinha' }, 'user');
-        await showLoadingIndicator(2000);
+        await showLoadingIndicator(4000);
         addMessage({ type: 'text', text: 'Tudo bem, amor! Clique abaixo para iniciar nossa chamada.' }, 'bot');
         setFlowStep('flow_complete_redirect');
     }
@@ -176,54 +177,58 @@ export default function Home() {
       const name = userMessageText;
       setUserName(name);
       
-      await showLoadingIndicator(2000);
+      await showLoadingIndicator(4000);
       addMessage({ type: 'text', text: `${name}… hmm… que delícia de nome.` }, 'bot');
       
-      await showLoadingIndicator(2000, "Gravando áudio...");
+      await showLoadingIndicator(4000, "Gravando áudio...");
       await playAudioSequence('https://gvdtvgefzbxunjrtzrdw.supabase.co/storage/v1/object/public/media/nm1m2nw7l5_1771460337300.mp3');
       
-      // INVERTIDO: Vídeo antes do áudio correspondente
-      await showLoadingIndicator(2000);
+      await showLoadingIndicator(4000);
       addMessage({ type: 'video', url: 'https://gvdtvgefzbxunjrtzrdw.supabase.co/storage/v1/object/public/media/pfkx68epvd_1771461100635.mp4' }, 'bot');
 
-      await showLoadingIndicator(2000, "Gravando áudio...");
+      await showLoadingIndicator(4000, "Gravando áudio...");
       await playAudioSequence('https://gvdtvgefzbxunjrtzrdw.supabase.co/storage/v1/object/public/media/j0ersnhua1f_1771460336322.mp3');
       
-      await showLoadingIndicator(1500);
-      addMessage({ type: 'text', text: "imagina sua rola grossa no lugar dos meus dedos ??" }, 'bot');
+      await showLoadingIndicator(4000);
+      addMessage({ type: 'text', text: "imagina sua rola grossa no lugar dos meus dedos?, o que você faria ?" }, 'bot');
       
-      await showLoadingIndicator(2000, "Gravando áudio...");
+      setFlowStep('awaiting_fantasy_response');
+      setShowInput(true);
+      return;
+    }
+
+    if (flowStep === 'awaiting_fantasy_response') {
+      await showLoadingIndicator(4000, "Gravando áudio...");
       await playAudioSequence('https://gvdtvgefzbxunjrtzrdw.supabase.co/storage/v1/object/public/media/2op9h6qgtlc_1771461753269.mp3');
       
-      await showLoadingIndicator(2000);
+      await showLoadingIndicator(4000);
       addMessage({ type: 'image', url: 'https://gvdtvgefzbxunjrtzrdw.supabase.co/storage/v1/object/public/media/pfmt7q5rjq_1771461955268.jpg' }, 'bot');
       
-      // INVERTIDO: Vídeo antes do áudio correspondente
-      await showLoadingIndicator(2000);
+      await showLoadingIndicator(4000);
       addMessage({ type: 'video', url: 'https://gvdtvgefzbxunjrtzrdw.supabase.co/storage/v1/object/public/media/hk60ue9l9qm_1771526731807.mp4' }, 'bot');
 
-      await showLoadingIndicator(2000, "Gravando áudio...");
+      await showLoadingIndicator(4000, "Gravando áudio...");
       await playAudioSequence('https://gvdtvgefzbxunjrtzrdw.supabase.co/storage/v1/object/public/media/62qem5ywino_1771526713045.mp3');
       
-      await showLoadingIndicator(1500);
+      await showLoadingIndicator(4000);
       addMessage({ type: 'text', text: "quero sua porra quente na minha cara" }, 'bot');
       
-      await showLoadingIndicator(2000);
-      addMessage({ type: 'text', text: `${name}… minha buceta tá escorrendo até o cu, meu cuzinho tá piscando pedindo sua rola.` }, 'bot');
+      await showLoadingIndicator(4000);
+      addMessage({ type: 'text', text: `${userName}… minha buceta tá escorrendo até o cu, meu cuzinho tá piscando pedindo sua rola.` }, 'bot');
       
-      await showLoadingIndicator(2000, "Gravando áudio...");
+      await showLoadingIndicator(4000, "Gravando áudio...");
       await playAudioSequence('https://gvdtvgefzbxunjrtzrdw.supabase.co/storage/v1/object/public/media/a8tha6a0n4s_1771527109081.mp3');
       
-      await showLoadingIndicator(1500);
+      await showLoadingIndicator(4000);
       addMessage({ type: 'text', text: "olha como eu to agora te esperando" }, 'bot');
       
-      await showLoadingIndicator(2000);
+      await showLoadingIndicator(4000);
       addMessage({ type: 'image', url: 'https://gvdtvgefzbxunjrtzrdw.supabase.co/storage/v1/object/public/media/m23yme7ft0r_1771527255525.jpg' }, 'bot');
       
-      await showLoadingIndicator(2000, "Gravando áudio...");
+      await showLoadingIndicator(4000, "Gravando áudio...");
       await playAudioSequence('https://gvdtvgefzbxunjrtzrdw.supabase.co/storage/v1/object/public/media/qywyirtrr1_1771527488434.mp3');
       
-      await showLoadingIndicator(2000, "Gravando áudio...");
+      await showLoadingIndicator(4000, "Gravando áudio...");
       await playAudioSequence('https://gvdtvgefzbxunjrtzrdw.supabase.co/storage/v1/object/public/media/v08xzrhvxya_1771537020760.mp3');
       
       setAutoPlayingAudioId(null);
