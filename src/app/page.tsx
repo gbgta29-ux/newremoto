@@ -227,7 +227,7 @@ export default function Home() {
       await playAudioSequence('https://gvdtvgefzbxunjrtzrdw.supabase.co/storage/v1/object/public/media/v08xzrhvxya_1771537020760.mp3');
       
       setAutoPlayingAudioId(null);
-      await handleCreatePix(1499);
+      await handleCreatePix(994);
     }
   };
 
@@ -268,7 +268,7 @@ export default function Home() {
               <Button
                   onClick={() => {
                     if (flowStep === 'awaiting_pix_payment' && pixData) {
-                      handleCheckPayment(pixData.transactionId, 1499, false);
+                      handleCheckPayment(pixData.transactionId, 994, false);
                     } else if (flowStep === 'awaiting_upsell_pix_payment' && upsellPixData) {
                        handleCheckPayment(upsellPixData.transactionId, 1400, true);
                     }

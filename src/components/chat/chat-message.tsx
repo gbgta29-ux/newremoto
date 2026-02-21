@@ -1,7 +1,9 @@
 
+"use client";
+
 import { cn } from "@/lib/utils";
 import type { Message } from "@/types/message";
-import { Check, CheckCheck, Copy } from 'lucide-react';
+import { Check, CheckCheck, Copy, Play } from 'lucide-react';
 import Image from "next/image";
 import AudioPlayer from "./audio-player";
 import { Button } from "../ui/button";
@@ -110,12 +112,17 @@ export default function ChatMessage({ message, isAutoPlaying = false }: ChatMess
         );
       case 'video':
         return (
-          <div className="relative">
+          <div className="relative group cursor-pointer">
             <video
               src={message.url!}
               controls
               className="rounded-md object-cover w-full max-w-[300px]"
             />
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none group-focus-within:hidden">
+                <div className="bg-black/40 rounded-full p-4 border-2 border-white/80 transition-transform group-hover:scale-110 shadow-lg">
+                    <Play className="h-12 w-12 text-white fill-white" />
+                </div>
+            </div>
             <OverlayTimeAndStatus />
           </div>
         );
