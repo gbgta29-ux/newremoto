@@ -243,12 +243,12 @@ export default function Home() {
             <div className="absolute inset-0 bg-black/70 z-20 flex flex-col items-center justify-center gap-4 text-center p-4">
                <Image
                 src="https://gvdtvgefzbxunjrtzrdw.supabase.co/storage/v1/object/public/media/d1396egl5vj_1771537797547.jpg"
-                alt="Bia"
+                alt="Bia ❤️"
                 width={80}
                 height={80}
                 className="rounded-full border-4 border-white object-cover aspect-square"
               />
-              <h1 className="text-white text-2xl font-bold">Bia</h1>
+              <h1 className="text-white text-2xl font-bold">Bia ❤️</h1>
               <p className="text-white/80">Mandou uma nova mensagem de audio</p>
               <Button onClick={() => setIsStarted(true)} size="lg" className="bg-accent hover:bg-accent/90 text-accent-foreground mt-4">
                 <Play className="mr-2" />

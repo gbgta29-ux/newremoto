@@ -10,13 +10,13 @@ export default function ChatHeader() {
       </button>
       <Image
         src="https://gvdtvgefzbxunjrtzrdw.supabase.co/storage/v1/object/public/media/d1396egl5vj_1771537797547.jpg"
-        alt="Bia"
+        alt="Bia ❤️"
         width={40}
         height={40}
         className="rounded-full object-cover aspect-square"
       />
       <div className="ml-3 flex-1">
-        <h1 className="font-semibold text-base leading-tight">Bia</h1>
+        <h1 className="font-semibold text-base leading-tight">Bia ❤️</h1>
         <p className="text-xs opacity-90 leading-tight">online</p>
       </div>
       <div className="flex items-center space-x-1">
