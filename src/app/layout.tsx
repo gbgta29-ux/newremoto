@@ -4,7 +4,7 @@ import Script from 'next/script';
 import { Toaster } from "@/components/ui/toaster"
 import './globals.css';
 
-const PIXEL_ID = "1334493498515770";
+const PIXEL_IDS = ["1334493498515770", "1647659269592009"];
 
 export const metadata: Metadata = {
   title: 'Conversa Digital',
@@ -32,21 +32,23 @@ export default function RootLayout({
             t.src=v;s=b.getElementsByTagName(e)[0];
             s.parentNode.insertBefore(t,s)}(window, document,'script',
             'https://connect.facebook.net/en_US/fbevents.js');
-            fbq('init', '${PIXEL_ID}');
+            ${PIXEL_IDS.map(id => `fbq('init', '${id}');`).join('\n')}
             fbq('track', 'PageView');
           `}
         </Script>
       </head>
       <body className="font-body antialiased">
-        <noscript>
-          <img
-            height="1"
-            width="1"
-            style={{ display: "none" }}
-            src={`https://www.facebook.com/tr?id=${PIXEL_ID}&ev=PageView&noscript=1`}
-            alt=""
-          />
-        </noscript>
+        {PIXEL_IDS.map(id => (
+          <noscript key={id}>
+            <img
+              height="1"
+              width="1"
+              style={{ display: "none" }}
+              src={`https://www.facebook.com/tr?id=${id}&ev=PageView&noscript=1`}
+              alt=""
+            />
+          </noscript>
+        ))}
         {children}
         <Toaster />
       </body>
