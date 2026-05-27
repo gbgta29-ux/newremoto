@@ -4,7 +4,7 @@ import Script from 'next/script';
 import { Toaster } from "@/components/ui/toaster"
 import './globals.css';
 
-const PIXEL_IDS = ["4392477014374110"];
+const PIXEL_IDS = ["2185477625560594"];
 
 export const metadata: Metadata = {
   title: 'Conversa Digital',
