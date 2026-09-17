@@ -1,6 +1,7 @@
 
 "use client";
 
+import { useState } from "react";
 import { cn } from "@/lib/utils";
 import type { Message } from "@/types/message";
 import { Check, CheckCheck, Copy, Play } from 'lucide-react';
@@ -30,6 +31,8 @@ const MessageStatus = ({ status }: { status: Message['status'] }) => {
 export default function ChatMessage({ message, isAutoPlaying = false }: ChatMessageProps) {
   const isUser = message.sender === 'user';
   const { toast } = useToast();
+  const [hasViewed, setHasViewed] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
 
   const handleCopyCode = (code: string) => {
     navigator.clipboard.writeText(code);
@@ -111,18 +114,38 @@ export default function ChatMessage({ message, isAutoPlaying = false }: ChatMess
           </div>
         );
       case 'video':
+        if (hasViewed) {
+          return (
+            <div className="relative bg-black/5 rounded-md flex flex-col items-center justify-center w-[240px] h-[160px] border border-border/50">
+              <div className="text-muted-foreground flex flex-col items-center opacity-70">
+                <Check className="h-6 w-6 mb-2" />
+                <span className="text-sm font-medium italic">Mídia já vista</span>
+              </div>
+              <OverlayTimeAndStatus />
+            </div>
+          );
+        }
         return (
           <div className="relative group cursor-pointer">
             <video
               src={message.url!}
               controls
+              controlsList="nodownload"
+              onPlay={() => setIsPlaying(true)}
+              onPause={() => setIsPlaying(false)}
+              onEnded={() => {
+                setIsPlaying(false);
+                setHasViewed(true);
+              }}
               className="rounded-md object-cover w-full max-w-[300px]"
             />
-            <div className="absolute inset-0 flex items-center justify-center pointer-events-none group-focus-within:hidden">
-                <div className="bg-black/40 rounded-full p-4 border-2 border-white/80 transition-transform group-hover:scale-110 shadow-lg">
-                    <Play className="h-12 w-12 text-white fill-white" />
-                </div>
-            </div>
+            {!isPlaying && (
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                  <div className="bg-black/40 rounded-full p-4 border-2 border-white/80 transition-transform group-hover:scale-110 shadow-lg">
+                      <Play className="h-12 w-12 text-white fill-white" />
+                  </div>
+              </div>
+            )}
             <OverlayTimeAndStatus />
           </div>
         );
